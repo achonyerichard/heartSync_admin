@@ -1,20 +1,71 @@
-'use client'
+"use client";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import React, { useState } from "react";
+import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 
-const MarketplaceModal = ({ type }: { type: "add" | "update" }) => {
+const MarketplaceModal = ({
+  type,
+  setOpen,
+  item,
+}: {
+  type: "add" | "update";
+  setOpen: () => void;
+  item?: any;
+}) => {
   const [details, setDetails] = useState({
     name: "",
     description: "",
-    quantity: "",
-    price: "",
-    image: "",
+    stock: 0,
+    price: 0,
+    image: null,
   });
+  const [preview, setPreview] = useState<any>(null);
+
+  useEffect(() => {
+    let img: any;
+    if (details.image) {
+      img = URL.createObjectURL(details.image as any);
+      setPreview(img);
+    }
+
+    // Clean up URLs when component unmounts
+    return () => {
+      URL.revokeObjectURL(img);
+    };
+  }, [details.image]);
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const arr: File[] = [];
+    if (e.target.files) {
+      for (let i = 0; i < e.target.files.length; i++) {
+        arr.push(e.target.files[i]);
+      }
+      console.log(arr);
+      setDetails((prev) => ({ ...prev, [e.target.name]: arr[0] }));
+    }
+  };
+
+  const closeModal = () => {
+    setOpen();
+    setDetails({ name: "", description: "", stock: 0, price: 0, image: null });
+    setPreview(null);
+  };
+
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    console.log(details);
+  };
 
   return (
-    <div className="relative w-10/12 rounded-xl bg-white p-6">
+    <div className="relative max-h-[95vh] w-10/12 overflow-y-auto rounded-xl bg-white p-6">
       {" "}
       <div className="mb-10 flex items-center gap-x-2.5">
         <svg
@@ -31,60 +82,134 @@ const MarketplaceModal = ({ type }: { type: "add" | "update" }) => {
         </svg>
         <span className="text-[20px] font-bold capitalize">{type} Gifts</span>
       </div>
-      <form onSubmit={() => {}} className="flex gap-x-10">
-        <div className="w-3/5">
-          <div className="mb-6">
-            <Label>Gift Name</Label>
-            <Input
-              className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
-              placeholder="Adidas Ultra Boost"
-            />
+      <form onSubmit={handleSubmit} className="">
+        <div className="flex gap-x-10">
+          <div className="w-3/5">
+            <div className="mb-6">
+              <Label>Gift Name</Label>
+              <Input
+                className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
+                placeholder="Adidas Ultra Boost"
+                name="name"
+                onChange={handleInputChange}
+                value={details.name}
+              />
+            </div>
+            <div className="mb-6">
+              {" "}
+              <Label>Gift Description</Label>
+              <Textarea
+                className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
+                name="description"
+                onChange={handleInputChange}
+                value={details.description}
+              />
+            </div>
+            <div className="mb-6">
+              <Label>Stock Quantity</Label>
+              <Input
+                className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
+                placeholder="21"
+                type="number"
+                name="stock"
+                onChange={handleInputChange}
+                value={details.stock}
+              />
+            </div>
+            <div className="mb-6">
+              <Label>Price</Label>
+              <Input
+                className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
+                placeholder="500"
+                type="number"
+                name="price"
+                onChange={handleInputChange}
+                value={details.price}
+              />
+            </div>
           </div>
-          <div className="mb-6">
+          <div className="w-2/5">
             {" "}
             <Label>Gift Description</Label>
-            <Textarea className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500" />
-          </div>
-          <div className="mb-6">
-            <Label>Stock Quantity</Label>
-            <Input
-              className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
-              placeholder="21"
-              type="number"
-            />
-          </div>
-          <div className="mb-6">
-            <Label>Price</Label>
-            <Input
-              className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
-              placeholder="500"
-              type="number"
-            />
-          </div>
-        </div>
-        <div className="w-2/5">
-          {" "}
-          <Label>Gift Description</Label>
-          <label className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-md border-2 border-dashed p-6">
-            <input type="file" className="absolute cursor-pointer opacity-0" />
-            <svg
-              width="65"
-              height="64"
-              viewBox="0 0 65 64"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+            <label
+              className={`relative cursor-pointer rounded-md border-2 ${preview ? "" : "flex flex-col items-center justify-center gap-1 border-dashed p-6"}`}
             >
-              <path
-                d="M54.5 10.5H10.5C9.57174 10.5 8.6815 10.8687 8.02513 11.5251C7.36875 12.1815 7 13.0717 7 14V50C7 50.9283 7.36875 51.8185 8.02513 52.4749C8.6815 53.1312 9.57174 53.5 10.5 53.5H54.5C55.4283 53.5 56.3185 53.1312 56.9749 52.4749C57.6312 51.8185 58 50.9283 58 50V14C58 13.0717 57.6312 12.1815 56.9749 11.5251C56.3185 10.8687 55.4283 10.5 54.5 10.5ZM10.5 13.5H54.5C54.6326 13.5 54.7598 13.5527 54.8536 13.6464C54.9473 13.7402 55 13.8674 55 14V42.375L46.975 34.35C46.3154 33.6996 45.4263 33.335 44.5 33.335C43.5737 33.335 42.6846 33.6996 42.025 34.35L36.85 39.525C36.8055 39.5735 36.7514 39.6122 36.6912 39.6387C36.6309 39.6652 36.5658 39.6789 36.5 39.6789C36.4342 39.6789 36.3691 39.6652 36.3088 39.6387C36.2486 39.6122 36.1945 39.5735 36.15 39.525L24.975 28.35C24.3154 27.6996 23.4263 27.335 22.5 27.335C21.5737 27.335 20.6846 27.6996 20.025 28.35L10 38.375V14C10 13.8674 10.0527 13.7402 10.1464 13.6464C10.2402 13.5527 10.3674 13.5 10.5 13.5ZM54.5 50.5H10.5C10.3674 50.5 10.2402 50.4473 10.1464 50.3536C10.0527 50.2598 10 50.1326 10 50V42.625L22.15 30.475C22.1945 30.4265 22.2486 30.3878 22.3088 30.3613C22.3691 30.3348 22.4342 30.3211 22.5 30.3211C22.5658 30.3211 22.6309 30.3348 22.6912 30.3613C22.7514 30.3878 22.8055 30.4265 22.85 30.475L34.025 41.65C34.6846 42.3004 35.5737 42.665 36.5 42.665C37.4263 42.665 38.3154 42.3004 38.975 41.65L44.15 36.475C44.1945 36.4265 44.2486 36.3878 44.3088 36.3613C44.3691 36.3348 44.4342 36.3211 44.5 36.3211C44.5658 36.3211 44.6309 36.3348 44.6912 36.3613C44.7514 36.3878 44.8055 36.4265 44.85 36.475L55 46.625V50C55 50.1326 54.9473 50.2598 54.8536 50.3536C54.7598 50.4473 54.6326 50.5 54.5 50.5ZM37.725 26.775C37.4922 26.5422 37.3081 26.2653 37.1836 25.9606C37.0591 25.6558 36.9967 25.3292 37 25C37 24.337 37.2634 23.7011 37.7322 23.2322C38.2011 22.7634 38.837 22.5 39.5 22.5C40.163 22.5 40.7989 22.7634 41.2678 23.2322C41.7366 23.7011 42 24.337 42 25C42 25.663 41.7366 26.2989 41.2678 26.7678C40.7989 27.2366 40.163 27.5 39.5 27.5C39.1708 27.5033 38.8442 27.4409 38.5394 27.3164C38.2347 27.1919 37.9578 27.0078 37.725 26.775Z"
-                fill="#4A69E2"
+              {preview ? (
+                <>
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 48 48"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute top-7 z-10 translate-x-5 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDetails((prev: any) => ({ ...prev, image: null }));
+                    }}
+                  >
+                    <path
+                      d="M24 4.5C20.1433 4.5 16.3731 5.64366 13.1664 7.78634C9.95963 9.92903 7.46027 12.9745 5.98436 16.5377C4.50845 20.1008 4.12228 24.0216 4.8747 27.8043C5.62711 31.5869 7.4843 35.0615 10.2114 37.7886C12.9386 40.5157 16.4131 42.3729 20.1957 43.1253C23.9784 43.8777 27.8992 43.4916 31.4623 42.0156C35.0255 40.5397 38.071 38.0404 40.2137 34.8336C42.3564 31.6269 43.5 27.8567 43.5 24C43.4945 18.83 41.4383 13.8732 37.7826 10.2174C34.1268 6.56167 29.1701 4.50546 24 4.5ZM31.0613 28.9387C31.2006 29.0781 31.3112 29.2436 31.3866 29.4257C31.462 29.6077 31.5008 29.8029 31.5008 30C31.5008 30.1971 31.462 30.3923 31.3866 30.5743C31.3112 30.7564 31.2006 30.9219 31.0613 31.0613C30.9219 31.2006 30.7564 31.3112 30.5744 31.3866C30.3923 31.462 30.1971 31.5008 30 31.5008C29.8029 31.5008 29.6078 31.462 29.4257 31.3866C29.2436 31.3112 29.0781 31.2006 28.9388 31.0613L24 26.1206L19.0613 31.0613C18.9219 31.2006 18.7564 31.3112 18.5744 31.3866C18.3923 31.462 18.1971 31.5008 18 31.5008C17.8029 31.5008 17.6078 31.462 17.4257 31.3866C17.2436 31.3112 17.0781 31.2006 16.9388 31.0613C16.7994 30.9219 16.6888 30.7564 16.6134 30.5743C16.538 30.3923 16.4992 30.1971 16.4992 30C16.4992 29.8029 16.538 29.6077 16.6134 29.4257C16.6888 29.2436 16.7994 29.0781 16.9388 28.9387L21.8794 24L16.9388 19.0613C16.6573 18.7798 16.4992 18.398 16.4992 18C16.4992 17.602 16.6573 17.2202 16.9388 16.9387C17.2202 16.6573 17.602 16.4992 18 16.4992C18.3981 16.4992 18.7798 16.6573 19.0613 16.9387L24 21.8794L28.9388 16.9387C29.0781 16.7994 29.2436 16.6888 29.4257 16.6134C29.6078 16.538 29.8029 16.4992 30 16.4992C30.1971 16.4992 30.3923 16.538 30.5744 16.6134C30.7564 16.6888 30.9219 16.7994 31.0613 16.9387C31.2006 17.0781 31.3112 17.2436 31.3866 17.4257C31.462 17.6077 31.5008 17.8029 31.5008 18C31.5008 18.1971 31.462 18.3923 31.3866 18.5743C31.3112 18.7564 31.2006 18.9219 31.0613 19.0613L26.1206 24L31.0613 28.9387Z"
+                      fill="#F75555"
+                    />
+                  </svg>
+                  <Image
+                    src={preview}
+                    alt="gift image"
+                    className="h-auto max-h-[500px] w-full object-cover"
+                    width={500}
+                    height={500}
+                  />
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <svg
+                    width="65"
+                    height="64"
+                    viewBox="0 0 65 64"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M54.5 10.5H10.5C9.57174 10.5 8.6815 10.8687 8.02513 11.5251C7.36875 12.1815 7 13.0717 7 14V50C7 50.9283 7.36875 51.8185 8.02513 52.4749C8.6815 53.1312 9.57174 53.5 10.5 53.5H54.5C55.4283 53.5 56.3185 53.1312 56.9749 52.4749C57.6312 51.8185 58 50.9283 58 50V14C58 13.0717 57.6312 12.1815 56.9749 11.5251C56.3185 10.8687 55.4283 10.5 54.5 10.5ZM10.5 13.5H54.5C54.6326 13.5 54.7598 13.5527 54.8536 13.6464C54.9473 13.7402 55 13.8674 55 14V42.375L46.975 34.35C46.3154 33.6996 45.4263 33.335 44.5 33.335C43.5737 33.335 42.6846 33.6996 42.025 34.35L36.85 39.525C36.8055 39.5735 36.7514 39.6122 36.6912 39.6387C36.6309 39.6652 36.5658 39.6789 36.5 39.6789C36.4342 39.6789 36.3691 39.6652 36.3088 39.6387C36.2486 39.6122 36.1945 39.5735 36.15 39.525L24.975 28.35C24.3154 27.6996 23.4263 27.335 22.5 27.335C21.5737 27.335 20.6846 27.6996 20.025 28.35L10 38.375V14C10 13.8674 10.0527 13.7402 10.1464 13.6464C10.2402 13.5527 10.3674 13.5 10.5 13.5ZM54.5 50.5H10.5C10.3674 50.5 10.2402 50.4473 10.1464 50.3536C10.0527 50.2598 10 50.1326 10 50V42.625L22.15 30.475C22.1945 30.4265 22.2486 30.3878 22.3088 30.3613C22.3691 30.3348 22.4342 30.3211 22.5 30.3211C22.5658 30.3211 22.6309 30.3348 22.6912 30.3613C22.7514 30.3878 22.8055 30.4265 22.85 30.475L34.025 41.65C34.6846 42.3004 35.5737 42.665 36.5 42.665C37.4263 42.665 38.3154 42.3004 38.975 41.65L44.15 36.475C44.1945 36.4265 44.2486 36.3878 44.3088 36.3613C44.3691 36.3348 44.4342 36.3211 44.5 36.3211C44.5658 36.3211 44.6309 36.3348 44.6912 36.3613C44.7514 36.3878 44.8055 36.4265 44.85 36.475L55 46.625V50C55 50.1326 54.9473 50.2598 54.8536 50.3536C54.7598 50.4473 54.6326 50.5 54.5 50.5ZM37.725 26.775C37.4922 26.5422 37.3081 26.2653 37.1836 25.9606C37.0591 25.6558 36.9967 25.3292 37 25C37 24.337 37.2634 23.7011 37.7322 23.2322C38.2011 22.7634 38.837 22.5 39.5 22.5C40.163 22.5 40.7989 22.7634 41.2678 23.2322C41.7366 23.7011 42 24.337 42 25C42 25.663 41.7366 26.2989 41.2678 26.7678C40.7989 27.2366 40.163 27.5 39.5 27.5C39.1708 27.5033 38.8442 27.4409 38.5394 27.3164C38.2347 27.1919 37.9578 27.0078 37.725 26.775Z"
+                      fill="#4A69E2"
+                    />
+                  </svg>
+                  <p className="text-center text-xs text-lightgray">
+                    Drop your image here or browse <br />
+                    .jpeg and .png are alloweed
+                  </p>
+                </>
+              )}
+              <input
+                type="file"
+                className="absolute cursor-pointer opacity-0"
+                onChange={handleFileChange}
+                name="image"
               />
-            </svg>
-            <p className="text-lightgray text-center text-xs">
-              Drop your image here or browse <br />
-              .jpeg and .png are alloweed
-            </p>
-          </label>
+            </label>
+          </div>
         </div>
+        <div className="flex justify-center gap-x-3">
+          {" "}
+          <Button
+            variant="default"
+            type="submit"
+            onClick={setOpen}
+            className="min-w-[100px]"
+          >
+            {type === "add" ? "Add" : "Update"}
+          </Button>{" "}
+          <Button
+            variant={type === "add" ? "secondary" : "outline"}
+            type="submit"
+            onClick={closeModal}
+            className="min-w-[100px]"
+          >
+            {type === "add" ? "Cancel" : "Delete"}
+          </Button>
+        </div>{" "}
       </form>
     </div>
   );

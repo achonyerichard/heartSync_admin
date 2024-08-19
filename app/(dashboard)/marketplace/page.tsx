@@ -56,7 +56,7 @@ const Item = ({
 const Page = () => {
   const typeRef = useRef<"add" | "update">("add");
   const [open, setOpen] = useState(false);
-  const [updateItem, setUpdateItem] = useState<any>();
+  const [updateItem, setUpdateItem] = useState<any>(undefined);
   const items = [
     {
       title: "Adidas Ultra boost",
@@ -156,6 +156,7 @@ const Page = () => {
             onClick={() => {
               setOpen(true);
               typeRef.current = "add";
+              setUpdateItem(null)
             }}
           >
             Add New Gifts
@@ -174,8 +175,8 @@ const Page = () => {
           ))}
         </div>
       </div>
-      <Modal open={open} setOpen={(prop) => setOpen(prop)}>
-        <MarketplaceModal type={typeRef.current} />
+      <Modal open={open} setOpen={() => setOpen(false)}>
+        <MarketplaceModal type={typeRef.current}  setOpen={() => setOpen(false)} item={updateItem}/>
       </Modal>
     </>
   );

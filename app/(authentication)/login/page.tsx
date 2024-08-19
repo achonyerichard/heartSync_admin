@@ -26,7 +26,7 @@ const Page = () => {
     }));
   };
 
-  const { mutate, isLoading } = useMutate("post", "");
+  const { mutate, isLoading } = useMutate("post", "auth/adminLogin");
 
   const submitHandler = (e: SyntheticEvent) => {
     e.preventDefault();

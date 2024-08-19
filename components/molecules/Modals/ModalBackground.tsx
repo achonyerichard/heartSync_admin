@@ -4,7 +4,7 @@ import { ReactNode, useEffect } from "react";
 interface Props {
   children: ReactNode;
   open: boolean;
-  setOpen: (prop:boolean) => void;
+  setOpen: () => void;
 }
 
 const Modal = ({ children, open, setOpen }: Props) => {
@@ -30,9 +30,7 @@ const Modal = ({ children, open, setOpen }: Props) => {
             ? "max-xl:bg-light visible backdrop-blur-[2px]"
             : "invisible backdrop-blur-none"
         }`}
-        onClick={() => {
-          setOpen(false);
-        }}
+        onClick={setOpen}
       />
       {children}
     </div>
