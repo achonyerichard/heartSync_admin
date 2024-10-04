@@ -19,6 +19,7 @@ import settings_inactive from "@/public/images/icons/settings_inactive.svg";
 import settings_active from "@/public/images/icons/settings_active.svg";
 import logout from "@/public/images/icons/logout.svg";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 const SideMenu = () => {
   const router = useRouter();
@@ -49,7 +50,7 @@ const SideMenu = () => {
 
   return (
     <aside
-      className={`transition2 sticky top-0 h-screen bg-secondary ${open ? "w-3/12" : "w-[108px]"}`}
+      className={`transition2 sticky top-0 h-screen bg-secondary ${open ? "lg:w-1/5" : "lg:w-[108px] lg:block hidden"}`}
     >
       <div
         className={`transition2 relative flex h-[88px] items-center justify-between bg-primary ${open ? "px-9" : "px-6"}`}
@@ -108,12 +109,11 @@ const SideMenu = () => {
               style={{ transform: `translateY(${index * (53 + 4)}px)` }}
             />
             {menu.map((menuitem, index) => (
-              <div
+              <Link
                 className="transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-[10px] bg-transparent px-4 py-3 hover:bg-primary"
                 key={index}
-                onClick={() => {
-                  router.push(menuitem.route.toLowerCase());
-                }}
+                href={`/${menuitem.route.toLowerCase()}`}
+               
               >
                 <Image
                   src={
@@ -129,7 +129,7 @@ const SideMenu = () => {
                 >
                   {menuitem.route}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
