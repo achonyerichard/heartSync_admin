@@ -50,7 +50,7 @@ const SideMenu = () => {
 
   return (
     <aside
-      className={`transition2 sticky top-0 h-screen bg-secondary ${open ? "lg:w-1/5" : "lg:w-[108px] lg:block hidden"}`}
+      className={`transition2 sticky top-0 h-screen shrink-0 bg-secondary ${open ? "lg:w-1/5" : "lg:w-[108px] lg:block hidden"}`}
     >
       <div
         className={`transition2 relative flex h-[88px] items-center justify-between bg-primary ${open ? "px-9" : "px-6"}`}
