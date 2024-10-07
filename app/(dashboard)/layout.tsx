@@ -8,7 +8,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
       <SideMenu />
       <section className="grow">
         <NavBar />
-        <div className="px-9 py-6 ">{children}</div>
+        <div className="px-3 xl:px-9 py-3 xl:py-6 ">{children}</div>
       </section>
     </div>
   );
