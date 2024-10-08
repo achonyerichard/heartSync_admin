@@ -11,7 +11,7 @@ export const CustomCard = ({
 }) => {
   return (
     <div
-      className={`rounded-xl px-4 py-6 shadow-lg ${className}`}
+      className={`rounded-md xl:rounded-xl px-2 xl:px-4 py-2 xl:py-6 shadow-lg ${className}`}
       onClick={onClick}
     >
       {children}

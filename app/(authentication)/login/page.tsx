@@ -26,7 +26,15 @@ const Page = () => {
     }));
   };
 
-  const { mutate, isLoading } = useMutate("post", "auth/adminLogin");
+  const { mutate, isLoading } = useMutate(
+    "post",
+    "auth/adminLogin",
+    (data) => {
+      console.log(data);
+    },
+    undefined,
+    (err) => {},
+  );
 
   const submitHandler = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -51,12 +59,10 @@ const Page = () => {
         alt="auth_logo"
         className="mb-10 h-auto max-w-[189px] rounded-3xl object-cover"
       />{" "}
-      <h3 className=" mb-7 text-[56px] font-bold text-primary">
-        Welcome Back
-      </h3>
+      <h3 className="mb-7 text-[56px] font-bold text-primary">Welcome Back</h3>
       <form onSubmit={submitHandler} className="w-10/12">
         <Input
-          className={`transition3 mb-7 bg-gray-100 focus:border-gray-500 h-14 ${error.email.error ? "border-primary text-primary" : ""}`}
+          className={`transition3 bg-gray-100 focus:border-gray-500 mb-7 h-14 ${error.email.error ? "border-primary text-primary" : ""}`}
           placeholder="Email address"
           name="email"
           onChange={handleInputChange}
@@ -64,7 +70,7 @@ const Page = () => {
           message={error.email.message}
         />{" "}
         <Input
-          className={`transition3 mb-14 bg-gray-100 focus:border-gray-500 h-14 ${error.password.error ? "border-primary text-primary" : ""}`}
+          className={`transition3 bg-gray-100 focus:border-gray-500 mb-14 h-14 ${error.password.error ? "border-primary text-primary" : ""}`}
           placeholder="Password"
           name="password"
           type="password"
