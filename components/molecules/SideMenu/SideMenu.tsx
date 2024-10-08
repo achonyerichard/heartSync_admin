@@ -34,7 +34,7 @@ const SideMenu = () => {
       route: "Overview",
     },
     { inactive: users_inactive, active: users_active, route: "Users" },
-    { inactive: payments_inactive, active: payments_active, route: "Payments" },
+    { inactive: payments_inactive, active: payments_active, route: "Membership" },
     {
       inactive: marketplace_inactive,
       active: marketplace_active,

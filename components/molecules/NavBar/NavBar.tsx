@@ -9,17 +9,11 @@ import logo from "@/public/images/logo_2.png";
 const NavBar = () => {
   const { setOpen } = useUtilAuth();
   return (
-    <div className="sticky top-0 z-10 flex h-16 items-center justify-between bg-white px-3 shadow-lg xl:h-[88px] xl:px-9">
-      <h2
-        className="hidden text-[28px] font-bold text-primary xl:block"
-        onClick={() => setOpen(true)}
-      >
-        Dashboard
-      </h2>
-      <Image
-        src={logo}
-        alt=""
-        className="block h-10 w-10 xl:hidden xl:h-auto xl:w-auto"  onClick={() => setOpen(true)}
+    <div className="sticky top-0 z-10 flex h-[88px] items-center justify-between bg-white px-9 shadow-lg">
+      <h2 className="text-[28px] font-bold text-primary">Dashboard</h2>
+      <Input
+        className="transition3 mx-auto h-10 lg:w-9/12 bg-gray focus:border-gray-500 rounded-lg hidden lg:block"
+        placeholder="Search anything..."
       />
       <Image
         src={profile}
