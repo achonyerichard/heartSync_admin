@@ -62,7 +62,7 @@ const Page = () => {
       <h3 className="mb-7 text-[56px] font-bold text-primary">Welcome Back</h3>
       <form onSubmit={submitHandler} className="w-10/12">
         <Input
-          className={`transition3 bg-gray-100 focus:border-gray-500 mb-7 h-14 ${error.email.error ? "border-primary text-primary" : ""}`}
+          className={`transition3 mb-7 bg-gray focus:border-gray-500 h-14 ${error.email.error ? "border-primary text-primary" : ""}`}
           placeholder="Email address"
           name="email"
           onChange={handleInputChange}
