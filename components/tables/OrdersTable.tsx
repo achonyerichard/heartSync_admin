@@ -82,7 +82,7 @@ const OrdersTable = () => {
               </th>
 
               <th className="b px-5 py-3 text-center text-sm font-semibold capitalize tracking-wider text-black">
-                Aent By
+                Sent By
               </th>
               <th className="b px-5 py-3 text-center text-sm font-semibold capitalize tracking-wider text-black">
                 Product
