@@ -70,7 +70,7 @@ const Page = () => {
           message={error.email.message}
         />{" "}
         <Input
-          className={`transition3 mb-14 bg-gray focus:border-gray-500 h-14 ${error.password.error ? "border-primary text-primary" : ""}`}
+          className={`transition3 bg-gray-100 focus:border-gray-500 mb-14 h-14 ${error.password.error ? "border-primary text-primary" : ""}`}
           placeholder="Password"
           name="password"
           type="password"
