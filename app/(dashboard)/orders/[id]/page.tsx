@@ -10,21 +10,45 @@ import {
 } from "@/components/ui/select";
 
 import React, { useRef, useState } from "react";
-import { Calendar } from "lucide-react";
+import { Calendar, DownloadIcon, ShoppingBagIcon } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 
 import Modal from "@/components/molecules/Modals/ModalBackground";
 
 import ConfirmModal from "@/components/molecules/Modals/DeleteModal/ConfirmationModal";
+import Image from "next/image";
+import { CustomCard } from "@/components/atoms/CustomCard/CustomCard";
+import Link from "next/link";
+
 const data = {
-  id: 1,
-  sentBy: "John Doe",
-  product: "Laptop",
-  orderId: "ORD123456",
-  date: "2024-09-28",
-  status: "Shipped",
-  amount: 1200.5,
+  sender: {
+    name: "Charlotte Adams",
+    email: " janecooper@gmail.com",
+    phone: "+900 231 1212",
+    img: "/images/sender.png",
+  },
+  recepient: {
+    name: "To: Bryan James",
+    email: " bryanjames@gmail.com",
+    phone: "+900 231 1212",
+    address: "Santa Ana, illinois 85342 2345 Westheimer Rd. Block 9A ",
+    img: "/images/receiver.png",
+  },
+  item: {
+    id: 1,
+    sentBy: "John Doe",
+    product: "Laptop",
+    orderId: "ORD123456",
+    date: "2024-09-28",
+    status: "Shipped",
+    amount: 1200.5,
+    paymentMehod: "Card",
+    paymentChannel: "PayPal",
+  },
+  order:[
+    {product:"Bouquet of Flowers (Lilac)",quantity:2, amount:1000,id:1}
+  ]
 };
 const SingleOrder = () => {
   const router = useRouter();
@@ -32,7 +56,7 @@ const SingleOrder = () => {
   const [open, setOpen] = useState(false);
   const typeRef = useRef<"delete" | "update">("delete");
   return (
-    <section className="">
+    <section className="pb-20">
       <div className="mb-4 flex flex-col items-center justify-between lg:flex-row">
         <div className="flex items-center gap-x-2">
           <svg
@@ -71,18 +95,18 @@ const SingleOrder = () => {
         <div className="flex items-center gap-x-4">
           <span className="flex items-center gap-x-1 [&>*:nth-child(even)]:font-bold">
             <p>Order Id:</p>
-            <p>{data.orderId}</p>
+            <p>{data.item.orderId}</p>
           </span>
           <span className="flex items-center gap-x-2 [&>*:nth-child(even)]:font-bold">
             <Calendar size={20} />
-            <p>{data.date}</p>
+            <p>{data.item.date}</p>
           </span>
           <Button
             variant="outline"
             className="flex h-10 w-auto items-center gap-2 rounded-none border-none bg-green-500 text-white"
             disabled
           >
-            {data.status}
+            {data.item.status}
           </Button>
         </div>
         <Select
@@ -99,6 +123,168 @@ const SingleOrder = () => {
             <SelectItem value="shipped">Shipped</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <CustomCard className="transition3 cursor-pointer border border-gray hover:scale-[1.01]">
+          <div className="mb-2 items-start gap-x-4 xl:mb-4 xl:flex">
+            <Image
+              src={data.sender.img}
+              width={200}
+              height={200}
+              className="shrink-none h-auto w-20 rounded-full max-xl:mb-2 max-xl:object-cover xl:h-12 xl:w-12 xl:rounded-full"
+              alt=""
+            />
+            <div className="flex flex-col gap-y-2">
+              <p className="text-sm font-semibold xl:text-base">
+                From: {data.sender.name}
+              </p>
+              <p className="text-sm font-semibold text-lightgray">
+                Email: {data.sender.email}
+              </p>
+              <p className="text-sm font-semibold text-lightgray xl:text-base">
+                Phone: {data.sender.phone}
+              </p>
+            </div>
+          </div>
+          <Link
+            href={`/users/${1}`}
+            className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary text-white"
+          >
+            View Profile
+          </Link>
+        </CustomCard>
+        <CustomCard className="transition3 cursor-pointer border border-gray hover:scale-[1.01]">
+          <div className="mb-2 items-start gap-x-4 xl:mb-4 xl:flex">
+            <Image
+              src={data.recepient.img}
+              width={200}
+              height={200}
+              className="shrink-none h-auto w-20 rounded-full max-xl:mb-2 max-xl:object-cover xl:h-12 xl:w-12 xl:rounded-full"
+              alt=""
+            />
+            <div className="flex flex-col gap-y-2">
+              <p className="text-sm font-semibold xl:text-base">
+                From: {data.recepient.name}
+              </p>
+              <p className="text-sm font-semibold text-lightgray">
+                Email: {data.recepient.email}
+              </p>
+              <p className="text-sm font-semibold text-lightgray xl:text-base">
+                Phone: {data.recepient.phone}
+              </p>
+            </div>
+          </div>
+          <Link
+            href={`/users/${1}`}
+            className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary text-white"
+          >
+            View Profile
+          </Link>
+        </CustomCard>
+        <CustomCard className="transition3 flex cursor-pointer items-start justify-between border border-gray hover:scale-[1.01]">
+          <div className="mb-2 items-start gap-x-4 xl:mb-4 xl:flex">
+            <span className="flex p-2 items-center justify-center bg-primary text-white rounded-lg">
+                <ShoppingBagIcon/>
+            </span>
+         
+            <div className="flex flex-col gap-y-2">
+              <p className="text-sm font-semibold xl:text-base">
+                From: {data.recepient.name}
+              </p>
+              <p className="text-sm font-semibold text-lightgray">
+                Email: {data.recepient.email}
+              </p>
+              <p className="text-sm font-semibold text-lightgray xl:text-base">
+                Phone: {data.recepient.phone}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            className="flex h-10 w-auto items-center gap-2 bg-primary text-white font-bold"
+          >
+            <DownloadIcon size={20} />
+            {/* {isLoading ? <Spinner size="2" loading={true} /> : <>Log In</>} */}
+          </Button>
+        </CustomCard>
+      </div>
+      <div className="h-auto w-full overflow-x-auto bg-white shadow-xl">
+        <table className="no-scrollbar w-full overflow-x-scroll leading-normal lg:overflow-hidden">
+          <thead>
+            <tr className="border-gray-400 border-b bg-white">
+              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                S/N
+              </th>
+
+            
+              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                Product
+              </th>
+              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                Order Id
+              </th>
+            
+              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                Quantity
+              </th>
+              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                Amount
+              </th>
+             
+            </tr>
+          </thead>
+
+          { (
+            <tbody className="w-full text-black shadow-lg [&>*:nth-child(even)]:bg-white [&>*:nth-child(odd)]:bg-lightpink">
+              {data.order.map((item, index) => (
+                <tr key={item?.id} className="">
+                  <td className="px-5 py-3 text-sm">{index + 1}</td>
+                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                    {item?.product}
+                  </td>
+                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                    {data.item.orderId}
+                  </td>
+                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                    {item.quantity}
+                  </td>
+                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                    {item.amount}
+                  </td>
+                 
+
+                </tr>
+              ))}
+               <tr className="">
+                <td></td>
+                <td></td>
+                <td></td>
+                  <td className="px-5 py-3 text-sm font-bold">Subtotal</td>
+                  
+                  <td className="px-5 py-3 text-sm">100</td>
+
+                </tr>
+                <tr className="">
+                <td></td>
+                <td></td>
+                <td></td>
+                  <td className="px-5 py-3 text-sm font-bold">Tax</td>
+                  
+                  <td className="px-5 py-3 text-sm">10</td>
+
+                </tr>
+                <tr className="">
+                <td></td>
+                <td></td>
+                <td></td>
+                  <td className="px-5 py-3 text-base text-primary font-bold">TOTAL</td>
+                  
+                  <td className="px-5 py-3 text-base text-primary font-bold">90</td>
+
+                </tr>
+            </tbody>
+          )}
+        </table>
       </div>
       <Modal open={value.length > 0} setOpen={() => setValue("")}>
         <ConfirmModal
