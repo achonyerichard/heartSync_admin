@@ -7,8 +7,12 @@ import { useMutate } from "@/hooks/useHttpRequest";
 import React, { ChangeEvent, SyntheticEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@radix-ui/themes";
+import { useRouter } from "next/navigation";
+import { setCookie } from "cookies-next";
+import { setHttpHeaders } from "@/lib/setHeaders";
 
 const Page = () => {
+  const router = useRouter();
   const [login, setLogin] = useState({ email: "", password: "" });
   const [error, setError] = useState({
     email: { error: false, message: "" },
@@ -30,10 +34,18 @@ const Page = () => {
     "post",
     "auth/adminLogin",
     (data) => {
+      setCookie("isLoggedIn", true, { maxAge: 31536000 });
+      setCookie("token", data?.data.data.accessToken, { maxAge: 31536000 });
+      localStorage.setItem("user", data?.data.data);
+      setHttpHeaders(data?.data.data.accessToken);
+      router.push("/overview");
       console.log(data);
     },
     undefined,
-    (err) => {},
+    (err) => {
+      handleErrorChange("email", true, "");
+      handleErrorChange("password", true, "");
+    },
   );
 
   const submitHandler = (e: SyntheticEvent) => {
@@ -53,16 +65,15 @@ const Page = () => {
 
   return (
     <div className="h-fit">
-      {" "}
       <Image
         src={logo}
         alt="auth_logo"
         className="mb-10 h-auto max-w-[189px] rounded-3xl object-cover"
-      />{" "}
+      />
       <h3 className="mb-7 text-[56px] font-bold text-primary">Welcome Back</h3>
       <form onSubmit={submitHandler} className="w-10/12">
         <Input
-          className={`transition3 bg-gray-100 focus:border-gray-500 mb-7 h-14 ${error.email.error ? "border-primary text-primary" : ""}`}
+          className={`transition3 focus:border-gray-500 mb-7 h-14 bg-gray ${error.email.error ? "border-primary text-primary" : ""}`}
           placeholder="Email address"
           name="email"
           onChange={handleInputChange}
@@ -70,7 +81,7 @@ const Page = () => {
           message={error.email.message}
         />{" "}
         <Input
-          className={`transition3 bg-gray-100 focus:border-gray-500 mb-14 h-14 ${error.password.error ? "border-primary text-primary" : ""}`}
+          className={`transition3 focus:border-gray-500 mb-14 h-14 bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
           placeholder="Password"
           name="password"
           type="password"
