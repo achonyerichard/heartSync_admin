@@ -33,7 +33,11 @@ const SideMenu = () => {
       route: "Overview",
     },
     { inactive: users_inactive, active: users_active, route: "Users" },
-    { inactive: payments_inactive, active: payments_active, route: "Payments" },
+    {
+      inactive: payments_inactive,
+      active: payments_active,
+      route: "Membership",
+    },
     {
       inactive: marketplace_inactive,
       active: marketplace_active,
@@ -50,7 +54,7 @@ const SideMenu = () => {
   return (
     <>
       <div
-        className={`${open ? "fixed bottom-0 left-0 right-0 top-0 bg-black/20 backdrop-blur-sm z-20 xl:hidden" : "hidden"}`}
+        className={`${open ? "fixed bottom-0 left-0 right-0 top-0 z-20 bg-black/20 backdrop-blur-sm xl:hidden" : "hidden"}`}
       />
       <aside
         className={`transition2 fixed bottom-0 top-0 z-20 flex shrink-0 flex-col bg-secondary xl:sticky xl:h-screen ${open ? "w-3/5 max-xl:left-0 md:w-2/5 xl:w-1/5" : "max-xl:-left-64 xl:w-[108px]"}`}
@@ -58,11 +62,15 @@ const SideMenu = () => {
         <div
           className={`transition2 relative flex h-16 items-center justify-between bg-primary xl:h-[88px] ${open ? "px-3 xl:px-9" : "px-3 xl:px-6"}`}
         >
-          <Image
-            src={logo}
-            alt="company logo"
-            className={`transition2 h-auto ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}
-          />
+          <span  className={`transition2 relative ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}>
+            <Image
+              src={logo}
+              alt="company logo"
+              className={`transition2 h-auto ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}
+            />{" "}
+            <p className="absolute -bottom-1.5 right-0 text-white text-xs italic">Be Inspired</p>
+          </span>
+
           <button
             onClick={() => setOpen(!open)}
             className={`transition2 ${open ? "left-[100%] translate-x-[0%]" : "absolute left-[50%] z-10 -translate-x-[50%]"}`}
