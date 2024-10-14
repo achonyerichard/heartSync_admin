@@ -165,6 +165,7 @@ const Page = () => {
           {items.map((item: any) => (
             <Item
               item={item}
+              key={item.title}
               onClick={(prop) => {
                 setUpdateItem(prop);
                 setOpen(true);
