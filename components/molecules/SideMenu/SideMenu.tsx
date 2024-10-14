@@ -25,7 +25,7 @@ const SideMenu = () => {
   const router = useRouter();
   const path = usePathname();
   const { open, setOpen } = useUtilAuth();
-  const [width, setWidth] = useState(0);
+  const [width, setWidth] = useState(window.innerWidth);
 
   const menu = [
     {
@@ -49,8 +49,19 @@ const SideMenu = () => {
   ];
 
   useEffect(() => {
-    if (window) setWidth(window.innerWidth);
-  }, []);
+    // Function to update width state when the window resizes
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup function to remove event listener when component unmounts
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); 
 
   
   const index = menu.findIndex(
