@@ -85,7 +85,7 @@ const SideMenu = () => {
         className={`transition2 fixed bottom-0 top-0 z-20 flex shrink-0 flex-col bg-secondary xl:sticky xl:h-screen ${open ? "w-3/5 max-xl:left-0 md:w-2/5 xl:w-1/5" : "max-xl:-left-64 xl:w-[108px]"}`}
       >
         <div
-          className={`transition2 relative flex h-16 items-center justify-between bg-primary py-2 xl:h-[88px] ${open ? "px-3  xl:px-9" : "py-4 px-3 xl:px-6"}`}
+          className={`transition2 relative flex h-20 items-center justify-between bg-primary py-5 xl:h-[88px] ${open ? "px-3  xl:px-9" : "py-4 px-3 xl:px-6"}`}
         >
           <span
             className={`transition2 relative ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}

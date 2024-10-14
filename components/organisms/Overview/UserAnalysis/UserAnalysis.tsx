@@ -169,14 +169,14 @@ const UserAnalysis = () => {
             </defs>
           </svg>
         </CustomTitle>
-        <CustomCard className="flex grow flex-col max-xl:gap-y-2 justify-evenly">
+        <CustomCard className="flex grow flex-col max-xl:gap-y-2 gap-y-2">
           {dummyData.map((cat, index) => (
             <div
               className="flex items-center justify-between"
               key={index}
             >
               <div
-                className="rounded-full px-4 py-1 text-sm text-white xl:py-1.5 xl:text-base"
+                className="rounded-full px-2 py-1 text-sm text-white xl:py-1.5 xl:text-sm"
                 style={{ backgroundColor: pillColor[cat.category] }}
               >
                 {cat.category}
