@@ -40,7 +40,6 @@ const Page = () => {
       localStorage.setItem("user", data?.data.data);
       setHttpHeaders(data?.data.data.accessToken);
       router.push("/overview");
-      console.log(data);
     },
     undefined,
     (err) => {
