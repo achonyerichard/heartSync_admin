@@ -23,7 +23,7 @@ const Page = () => {
       </div>
       <div className="flex justify-between">
         <Input
-          className="transition3 focus:border-gray-500 hidden h-10 rounded-lg bg-gray lg:block lg:w-72"
+          className="transition3 border-gray hidden h-10 rounded-lg bg-gray lg:block lg:w-72"
           placeholder="Name..."
         />
         

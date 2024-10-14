@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
+import CustomTitle from "@/components/atoms/CustomTitle/CustomTitle";
 
 const MarketplaceModal = ({
   type,
@@ -65,9 +66,9 @@ const MarketplaceModal = ({
   };
 
   return (
-    <div className="relative max-h-[95vh] w-10/12 overflow-y-auto rounded-xl bg-white p-6">
+    <div className="relative max-xl:h-screen xl:max-h-[95vh] w-full xl:w-10/12 overflow-y-auto rounded-xl bg-white p-4 xl:p-6">
       {" "}
-      <div className="mb-10 flex items-center gap-x-2.5">
+      <CustomTitle title="Gifts">
         <svg
           width="32"
           height="33"
@@ -80,15 +81,14 @@ const MarketplaceModal = ({
             fill="#F75555"
           />
         </svg>
-        <span className="text-[20px] font-bold capitalize">{type} Gifts</span>
-      </div>
+      </CustomTitle>
       <form onSubmit={handleSubmit} className="">
-        <div className="flex gap-x-10">
-          <div className="w-3/5">
+        <div className="flex max-xl:flex-col gap-x-10">
+          <div className="max-xl:order-2 xl:w-3/5">
             <div className="mb-6">
               <Label>Gift Name</Label>
               <Input
-                className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
+                className="transition3 bg-gray border-gray mt-2 h-10 rounded-lg"
                 placeholder="Adidas Ultra Boost"
                 name="name"
                 onChange={handleInputChange}
@@ -99,7 +99,7 @@ const MarketplaceModal = ({
               {" "}
               <Label>Gift Description</Label>
               <Textarea
-                className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
+                className="transition3 bg-gray border-gray mt-2 h-10 rounded-lg"
                 name="description"
                 onChange={handleInputChange}
                 value={details.description}
@@ -108,7 +108,7 @@ const MarketplaceModal = ({
             <div className="mb-6">
               <Label>Stock Quantity</Label>
               <Input
-                className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
+                className="transition3 bg-gray border-gray mt-2 h-10 rounded-lg"
                 placeholder="21"
                 type="number"
                 name="stock"
@@ -119,7 +119,7 @@ const MarketplaceModal = ({
             <div className="mb-6">
               <Label>Price</Label>
               <Input
-                className="transition3 mt-2 h-10 rounded-lg bg-gray-100 focus:border-gray-500"
+                className="transition3 bg-gray border-gray mt-2 h-10 rounded-lg"
                 placeholder="500"
                 type="number"
                 name="price"
@@ -128,7 +128,7 @@ const MarketplaceModal = ({
               />
             </div>
           </div>
-          <div className="w-2/5">
+          <div className="max-xl:order1 xl:w-2/5 max-xl:mb-5">
             {" "}
             <Label>Gift Description</Label>
             <label
@@ -197,7 +197,7 @@ const MarketplaceModal = ({
             variant="default"
             type="submit"
             onClick={setOpen}
-            className="min-w-[100px]"
+            className="max-xl:w-1/2 xl:min-w-[100px]"
           >
             {type === "add" ? "Add" : "Update"}
           </Button>{" "}
@@ -205,7 +205,7 @@ const MarketplaceModal = ({
             variant={type === "add" ? "secondary" : "outline"}
             type="submit"
             onClick={closeModal}
-            className="min-w-[100px]"
+            className="max-xl:w-1/2 xl:min-w-[100px]"
           >
             {type === "add" ? "Cancel" : "Delete"}
           </Button>

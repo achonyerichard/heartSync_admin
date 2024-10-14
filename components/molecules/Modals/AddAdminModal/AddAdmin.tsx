@@ -64,7 +64,7 @@ const AddModal = ({
             <div className="mb-3">
               <label className="text-xs font-bold text-black"> Name</label>
               <Input
-                className={`transition3 focus:border-gray-500 h-14 bg-gray`}
+                className={`transition3 border-gray h-14 bg-gray`}
                 placeholder="Enter a Category"
                 {...register("name", {
                   required: "Name is required",
@@ -81,7 +81,7 @@ const AddModal = ({
             <div className="mb-3">
               <label className="text-xs font-bold text-black"> Email:</label>
               <Input
-                className={`transition3 focus:border-gray-500 h-14 bg-gray`}
+                className={`transition3 border-gray h-14 bg-gray`}
                 placeholder="Enter an email"
                 {...register("email", {
                   required: "Email is required",
@@ -113,7 +113,7 @@ const AddModal = ({
             <label className="text-xs font-bold text-black">Password:</label>
             <span className="relative">
               <Input
-                className={`transition3 focus:border-gray-500 mb-14 h-14 bg-gray`}
+                className={`transition3 border-gray mb-14 h-14 bg-gray`}
                 placeholder="Password"
                 name="password"
                 type={passwordtoggle ? "password" : "text"}

@@ -56,7 +56,7 @@ const AddModal = ({
             <div className="mb-3">
               <label className="text-xs font-bold text-black"> Name</label>
               <Input
-                className={`transition3 focus:border-gray-500 mb-14 h-14 bg-gray`}
+                className={`transition3 border-gray mb-14 h-14 bg-gray`}
                 placeholder="Enter a Category"
                 {...register("name", {
                   required: "Name is required",

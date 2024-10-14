@@ -1,25 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-  
-@layer components {
-    .transition1 {
-      @apply transition-all ease-in-out duration-500;
-    }
-    .transition2 {
-      @apply transition-all ease-in-out duration-300;
-    }
-    .transition3 {
-      @apply transition-all ease-in-out duration-150;
-    }
-  }
 
-  html {
-    font-family: var(--font-urbanist);
+@layer components {
+  .transition1 {
+    @apply transition-all duration-500 ease-in-out;
   }
+  .transition2 {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  .transition3 {
+    @apply transition-all duration-150 ease-in-out;
+  }
+}
+
+html {
+  font-family: var(--font-urbanist);
+}
 
 .pagination {
-  @apply flex items-center mt-5 justify-center;
+  @apply mt-5 flex items-center justify-center;
 }
 
 .page-item {
@@ -27,7 +27,7 @@
 }
 
 .page-link {
-  @apply py-1 px-3 border-2 border-primary rounded-lg hover:bg-primary hover:text-white ;
+  @apply rounded-lg border-2 border-primary px-3 py-1 hover:bg-primary hover:text-white;
 }
 
 .previous-item {
@@ -35,7 +35,7 @@
 }
 
 .previous-link {
-  @apply py-2 px-4 border border-primary rounded-lg hover:bg-primary text-primary font-semibold hover:text-white;
+  @apply rounded-lg border border-primary px-4 py-2 font-semibold text-primary hover:bg-primary hover:text-white;
 }
 
 .next-item {
@@ -43,7 +43,7 @@
 }
 
 .next-link {
-  @apply py-2 px-4 border border-primary rounded-lg hover:bg-primary text-primary font-semibold hover:text-white;
+  @apply rounded-lg border border-primary px-4 py-2 font-semibold text-primary hover:bg-primary hover:text-white;
 }
 
 .break-item {
@@ -51,7 +51,14 @@
 }
 
 .break-link {
-  @apply py-2 px-2 text-black;
+  @apply px-2 py-2 text-black;
 }
 
+.scroll::-webkit-scrollbar {
+  display: none;
+}
 
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

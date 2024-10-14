@@ -7,6 +7,7 @@ import Modal from "@/components/molecules/Modals/ModalBackground";
 import { CustomCard } from "@/components/atoms/CustomCard/CustomCard";
 import MarketplaceModal from "@/components/molecules/Modals/MarketplaceModal/MarketplaceModal";
 import { Button } from "@/components/ui/button";
+import ReactPaginate from "react-paginate";
 
 const Item = ({
   item,
@@ -54,6 +55,8 @@ const Page = () => {
   const typeRef = useRef<"add" | "update">("add");
   const [open, setOpen] = useState(false);
   const [updateItem, setUpdateItem] = useState<any>(undefined);
+  let itemsPerPage = 4;
+  const [itemOffset, setItemOffset] = useState(0);
   const items = [
     {
       title: "Adidas Ultra boost",
@@ -129,6 +132,16 @@ const Page = () => {
     },
   ];
 
+  const endOffset = itemOffset + itemsPerPage;
+  const currentItems = items.slice(itemOffset, endOffset);
+  const pageCount = Math.ceil(items.length / itemsPerPage);
+  const handlePageClick = (event: { selected: any }) => {
+    const newOffset = (event.selected * itemsPerPage) % items.length;
+    console.log(
+      `User requested page number ${event.selected}, which is offset ${newOffset}`,
+    );
+    setItemOffset(newOffset);
+  };
   return (
     <>
       <div className="">
@@ -173,7 +186,25 @@ const Page = () => {
               }}
             />
           ))}
-        </div>
+        </div>     <ReactPaginate
+        breakLabel="....."
+        nextLabel="Next >"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={1}
+        pageCount={pageCount}
+        previousLabel="< Previous"
+        renderOnZeroPageCount={null}
+        containerClassName="pagination"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="previous-item"
+        previousLinkClassName="previous-link"
+        nextClassName="next-item"
+        nextLinkClassName="next-link"
+        breakClassName="break-item"
+        breakLinkClassName="break-link"
+        activeClassName="active"
+      />
       </div>
       <Modal open={open} setOpen={() => setOpen(false)}>
         <MarketplaceModal

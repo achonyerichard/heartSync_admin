@@ -172,7 +172,7 @@ const SingleReport = () => {
             </p>
           </div>
           <Textarea
-            className={`transition3 focus:border-gray-500 mb-7 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
+            className={`transition3 border-gray mb-7 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
             placeholder="Type your message here."
           />
           <div className="flex justify-end">
