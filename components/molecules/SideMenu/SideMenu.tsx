@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "@/public/images/logo_1.png";
 import Image from "next/image";
 import marketplace_inactive from "@/public/images/icons/marketplace_inactive.svg";
@@ -26,6 +25,7 @@ const SideMenu = () => {
   const router = useRouter();
   const path = usePathname();
   const { open, setOpen } = useUtilAuth();
+  const [width, setWidth] = useState(0);
 
   const menu = [
     {
@@ -48,6 +48,11 @@ const SideMenu = () => {
     { inactive: reports_inactive, active: reports_active, route: "Reports" },
   ];
 
+  useEffect(() => {
+    if (window) setWidth(window.innerWidth);
+  }, []);
+
+  
   const index = menu.findIndex(
     (rte) => rte.route.toLowerCase() === path.split("/")[1].split("?")[0],
   );
@@ -122,16 +127,17 @@ const SideMenu = () => {
                 className={`transition3 absolute left-0 right-0 z-10 h-[40px] rounded-md bg-white shadow-lg xl:h-[53px] xl:rounded-[10px] ${path.includes("/settings") ? "hidden" : ""}`}
                 style={{
                   transform:
-                    window.innerWidth > 1024
+                    width > 1024
                       ? `translateY(${index * (53 + 4)}px)`
                       : `translateY(${index * (40 + 4)}px)`,
                 }}
               />
               {menu.map((menuitem, index) => (
                 <Link
-                  className="transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 hover:bg-primary xl:rounded-[10px] xl:px-4 xl:py-3"
+                  className={`transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 xl:rounded-[10px] xl:px-4 xl:py-3 ${path.includes(menuitem.route.toLowerCase()) ? "" : "hover:bg-primary"}`}
                   key={index}
                   href={`/${menuitem.route.toLowerCase()}`}
+                  onClick={() => setOpen(false)}
                 >
                   <Image
                     src={
@@ -162,6 +168,7 @@ const SideMenu = () => {
                 className={`transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 hover:bg-primary xl:rounded-[10px] xl:px-4 xl:py-3 ${path.includes("/settings") ? "bg-white shadow-lg" : "bg-transparent"}`}
                 onClick={() => {
                   router.push("/settings");
+                  setOpen(false);
                 }}
               >
                 <Image

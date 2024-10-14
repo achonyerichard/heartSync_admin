@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
-import { Inter, Urbanist } from "next/font/google";
+"use client";
 import "./globals.css";
 import localFont from "@next/font/local";
 import Wrapper from "./wrapper";
-
+import { setHttpHeaders } from "@/lib/setHeaders";
+import { useEffect } from "react";
+import { getCookie } from "cookies-next";
 
 const urbanist = localFont({
   src: [
@@ -52,11 +53,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
+  useEffect(() => {
+    const cookie = getCookie("token")!;
+    setHttpHeaders(cookie);
+  }, []);
+
   return (
     <html lang="en">
-      <body
-        className={`${urbanist.variable} mx-auto max-w-[1728px]`}
-      >
+      <body className={`${urbanist.variable} mx-auto max-w-[1728px]`}>
         <Wrapper>{children}</Wrapper>
       </body>
     </html>

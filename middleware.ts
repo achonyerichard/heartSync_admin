@@ -6,18 +6,18 @@ export const config = {
 };
 
 export function middleware(request: NextRequest) {
-//  const loggedIn = request.cookies.has("isLoggedIn");
+  const loggedIn = request.cookies.has("isLoggedIn");
 
- // const auth = ["/login"];
+  const auth = ["/login"];
 
-//  if (loggedIn && auth.includes(request.nextUrl.pathname)) {
- //   return NextResponse.redirect(new URL("/overview", request.url));
- // } else if (!loggedIn && !auth.includes(request.nextUrl.pathname)) {
-  //  return NextResponse.redirect(new URL("/login", request.url));
-  //} else if (!loggedIn && request.nextUrl.pathname === "/") {
- //   return NextResponse.redirect(new URL("/login", request.url));
-  //} else if (loggedIn && request.nextUrl.pathname === "/") {
-  //  return NextResponse.redirect(new URL("/overview", request.url));
- // }
-  //return NextResponse.next();
+  if (loggedIn && auth.includes(request.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/overview", request.url));
+  } else if (!loggedIn && !auth.includes(request.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  } else if (!loggedIn && request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/login", request.url));
+  } else if (loggedIn && request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/overview", request.url));
+  }
+  return NextResponse.next();
 }
