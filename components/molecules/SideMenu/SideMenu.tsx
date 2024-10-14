@@ -16,6 +16,9 @@ import reports_inactive from "@/public/images/icons/reports_inactive.svg";
 import reports_active from "@/public/images/icons/reports_active.svg";
 import settings_inactive from "@/public/images/icons/settings_inactive.svg";
 import settings_active from "@/public/images/icons/settings_active.svg";
+import category_active from "@/public/images/icons/category_active.svg";
+import roles_active from "@/public/images/icons/roles_active.svg";
+import roles_inactive from "@/public/images/icons/roles_inactive.svg";
 import logout from "@/public/images/icons/logout.svg";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -40,10 +43,16 @@ const SideMenu = () => {
       route: "Membership",
     },
     {
+      inactive: orders_inactive,
+      active: category_active,
+      route: "Category",
+    },
+    {
       inactive: marketplace_inactive,
       active: marketplace_active,
       route: "Marketplace",
     },
+    { inactive: roles_inactive, active: roles_active, route: "Roles" },
     { inactive: orders_inactive, active: orders_active, route: "Orders" },
     { inactive: reports_inactive, active: reports_active, route: "Reports" },
   ];
@@ -52,7 +61,6 @@ const SideMenu = () => {
     if (window) setWidth(window.innerWidth);
   }, []);
 
-  
   const index = menu.findIndex(
     (rte) => rte.route.toLowerCase() === path.split("/")[1].split("?")[0],
   );
@@ -66,15 +74,19 @@ const SideMenu = () => {
         className={`transition2 fixed bottom-0 top-0 z-20 flex shrink-0 flex-col bg-secondary xl:sticky xl:h-screen ${open ? "w-3/5 max-xl:left-0 md:w-2/5 xl:w-1/5" : "max-xl:-left-64 xl:w-[108px]"}`}
       >
         <div
-          className={`transition2 relative flex h-16 items-center justify-between bg-primary xl:h-[88px] ${open ? "px-3 xl:px-9" : "px-3 xl:px-6"}`}
+          className={`transition2 relative flex h-16 items-center justify-between bg-primary py-2 xl:h-[88px] ${open ? "px-3  xl:px-9" : "py-4 px-3 xl:px-6"}`}
         >
-          <span  className={`transition2 relative ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}>
+          <span
+            className={`transition2 relative ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}
+          >
             <Image
               src={logo}
               alt="company logo"
               className={`transition2 h-auto ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}
             />{" "}
-            <p className="absolute -bottom-1.5 right-0 text-white text-xs italic">Be Inspired</p>
+            <p className="absolute -bottom-1.5 right-0 text-xs italic text-white">
+              Be Inspired
+            </p>
           </span>
 
           <button
