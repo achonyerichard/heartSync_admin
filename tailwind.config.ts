@@ -21,7 +21,11 @@ const config = {
       colors: {
         primary: "#F75555",
         secondary: "#D24747",
-        lightgray:"#8A8686"
+        lightgray: "#8A8686",
+        gray: "#EDEDED",
+        fadedBlue: "#F8F9FA",
+        lightpink: "#FFF6F6",
+        textgray: "#70706E",
       },
       fontFamily: { urbanist: ["var(--font-urbanist)"] },
       keyframes: {
