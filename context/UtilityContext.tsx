@@ -29,7 +29,7 @@ export function useUtilAuth() {
 export const UtilProvider = ({ children }: Children) => {
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (open) {
+    if (open&&window.innerWidth<1024) {
       document.body.style.overflow = "hidden";
     }
 
