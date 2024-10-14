@@ -24,3 +24,10 @@ export interface ProfileDetail {
   socialBar: string;
   lastSeen: string;
 }
+export interface Users {
+  id:string;
+  name:string;
+  createdAt:string;
+  email:string;
+  role:string
+}
