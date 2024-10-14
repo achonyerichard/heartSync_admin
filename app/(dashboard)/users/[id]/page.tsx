@@ -28,8 +28,8 @@ const SingleUser = () => {
   const typeRef = useRef<"delete" | "update">("delete");
   return (
     <section className="">
-      <div className="mb-4 flex flex-col items-center justify-between lg:flex-row">
-        <div className="flex items-center gap-x-2">
+      <div className="mb-4 flex flex-col gap-y-3 lg:gap-y-0 lg:items-center justify-between lg:flex-row">
+        <div className="flex items-center justify-between lg:justify-start gap-x-2">
           <svg
             onClick={() => router.back()}
             className="cursor-pointer"
@@ -44,7 +44,7 @@ const SingleUser = () => {
               fill="black"
             />
           </svg>
-          <div className="flex items-center gap-x-2.5">
+          <div className="flex items-center  gap-x-2.5">
             <svg
               width="32"
               height="33"
@@ -74,7 +74,7 @@ const SingleUser = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-x-4">
+        <div className="flex items-center lg:justify-end justify-center gap-x-4">
           <div className="flex items-center gap-x-2">
             <Label htmlFor="airplane-mode text-xs">Unblocked</Label>
             <Switch id="airplane-mode" />
@@ -87,7 +87,7 @@ const SingleUser = () => {
       </div>
       <div className="w-full">
         <Tabs defaultValue="about" className="">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col items-center lg:justify-between lg:flex-row gap-y-4 lg:gap-y-0">
             <div>
               <TabsList>
                 <TabsTrigger value="about" className="rounded-[10px]">
@@ -97,25 +97,26 @@ const SingleUser = () => {
                 <TabsTrigger value="gallery">Gallery</TabsTrigger>
               </TabsList>
             </div>
-
-            <Button
-              variant="outline"
-              className="flex h-10 w-auto items-center gap-2 bg-lightpink active:bg-primary"
-              onClick={() => {
-                setOpen(true);
-                typeRef.current = "delete";
-              }}
-            >
-              Delete
-              <Trash2 size={12} />
-              {/* {isLoading ? <Spinner size="2" loading={true} /> : <>Log In</>} */}
-            </Button>
+         
+              <Button
+                variant="outline"
+                className="flex h-10 w-auto items-center gap-2 bg-lightpink active:bg-primary"
+                onClick={() => {
+                  setOpen(true);
+                  typeRef.current = "delete";
+                }}
+              >
+                Delete
+                <Trash2 size={12} />
+                {/* {isLoading ? <Spinner size="2" loading={true} /> : <>Log In</>} */}
+              </Button>
+          
           </div>
-          <div className="mt-5 flex w-full items-start gap-5">
-            <div className="p-2 lg:w-1/4">
+          <div className="mt-5 flex lg:flex-row flex-col-reverse w-full items-start gap-5">
+            <div className="w-full  p-2 lg:w-1/4">
               <ProfileDetails />
             </div>
-            <div className="lg:w-3/4">
+            <div className="w-full lg:w-3/4">
               <TabsContent value="about" className="w-full">
                 <AboutUser />
               </TabsContent>
@@ -133,7 +134,7 @@ const SingleUser = () => {
         <DeleteModal
           type={typeRef.current}
           close={() => setOpen(false)}
-          handleDelete={()=>{}}
+          handleDelete={() => {}}
           text="Do you to permanently delete this user Anthony Gordon? "
         />
       </Modal>

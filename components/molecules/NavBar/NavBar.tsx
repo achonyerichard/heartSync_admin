@@ -9,7 +9,7 @@ import logo from "@/public/images/logo_2.png";
 const NavBar = () => {
   const { setOpen } = useUtilAuth();
   return (
-    <div className="sticky top-0 z-10 flex h-16 items-center justify-between bg-white px-3 shadow-lg xl:h-[88px] xl:px-9">
+    <div className="sticky  top-0 z-10 flex h-16 items-center justify-between bg-white px-3 shadow-lg xl:h-[88px] xl:px-9">
       <h2
         className="hidden text-[28px] font-bold text-primary xl:block"
         onClick={() => setOpen(true)}

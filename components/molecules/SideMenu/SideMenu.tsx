@@ -34,7 +34,11 @@ const SideMenu = () => {
       route: "Overview",
     },
     { inactive: users_inactive, active: users_active, route: "Users" },
-    { inactive: payments_inactive, active: payments_active, route: "Payments" },
+    {
+      inactive: payments_inactive,
+      active: payments_active,
+      route: "Membership",
+    },
     {
       inactive: marketplace_inactive,
       active: marketplace_active,
@@ -64,11 +68,15 @@ const SideMenu = () => {
         <div
           className={`transition2 relative flex h-16 items-center justify-between bg-primary xl:h-[88px] ${open ? "px-3 xl:px-9" : "px-3 xl:px-6"}`}
         >
-          <Image
-            src={logo}
-            alt="company logo"
-            className={`transition2 h-auto ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}
-          />
+          <span  className={`transition2 relative ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}>
+            <Image
+              src={logo}
+              alt="company logo"
+              className={`transition2 h-auto ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}
+            />{" "}
+            <p className="absolute -bottom-1.5 right-0 text-white text-xs italic">Be Inspired</p>
+          </span>
+
           <button
             onClick={() => setOpen(!open)}
             className={`transition2 ${open ? "left-[100%] translate-x-[0%]" : "absolute left-[50%] z-10 -translate-x-[50%]"}`}
