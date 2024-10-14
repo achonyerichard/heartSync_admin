@@ -65,14 +65,17 @@ const Page = () => {
   };
 
   return (
-    <div className="h-fit">
+    <div className="h-fit w-full">
+      <header className="mb-7 flex flex-col lg:items-start items-center ">
       <Image
         src={logo}
         alt="auth_logo"
-        className="mb-10 h-auto max-w-[189px] rounded-3xl object-cover"
+        className="mb-10 h-auto w-full lg:max-w-[189px] rounded-3xl object-cover "
       />
-      <h3 className="mb-7 text-[56px] font-bold text-primary">Welcome Back</h3>
-      <form onSubmit={submitHandler} className="w-10/12">
+      <h3 className=" text-3xl lg:text-[56px] lg:text-left text-center font-bold text-primary">Welcome Back</h3>
+      </header>
+     
+      <form onSubmit={submitHandler} className="w-full lg:w-10/12">
         <Input
           className={`transition3 focus:border-gray-500 mb-7 h-14 bg-gray ${error.email.error ? "border-primary text-primary" : ""}`}
           placeholder="Email address"
@@ -81,9 +84,9 @@ const Page = () => {
           onFocus={(e) => handleErrorChange(e.target.name, false, "")}
           message={error.email.message}
         />{" "}
-        <span className="relative mb-14">
+        <div className="relative mb-14 w-full">
           <Input
-            className={`transition3 focus:border-gray-500  h-14 bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
+            className={`transition3 focus:border-gray-500 h-14 bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
             placeholder="Password"
             name="password"
             type={passwordtoggle ? "password" : "text"}
@@ -91,33 +94,35 @@ const Page = () => {
             onFocus={(e) => handleErrorChange(e.target.name, false, "")}
             message={error.password.message}
           />
-          <span
-            onClick={() => setPasswordToggle(!passwordtoggle)}
-            className="cursor-pointer"
-          >
-            {!passwordtoggle ? (
-              <svg
-                className="h-6 fill-black"
-                focusable="false"
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                data-testid="EyeOutlineIcon"
-              >
-                <path d="M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z"></path>
-              </svg>
-            ) : (
-              <svg
-                className="h-6 fill-black"
-                focusable="false"
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                data-testid="EyeOffOutlineIcon"
-              >
-                <path d="M2,5.27L3.28,4L20,20.72L18.73,22L15.65,18.92C14.5,19.3 13.28,19.5 12,19.5C7,19.5 2.73,16.39 1,12C1.69,10.24 2.79,8.69 4.19,7.46L2,5.27M12,9A3,3 0 0,1 15,12C15,12.35 14.94,12.69 14.83,13L11,9.17C11.31,9.06 11.65,9 12,9M12,4.5C17,4.5 21.27,7.61 23,12C22.18,14.08 20.79,15.88 19,17.19L17.58,15.76C18.94,14.82 20.06,13.54 20.82,12C19.17,8.64 15.76,6.5 12,6.5C10.91,6.5 9.84,6.68 8.84,7L7.3,5.47C8.74,4.85 10.33,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C12.69,17.5 13.37,17.43 14,17.29L11.72,15C10.29,14.85 9.15,13.71 9,12.28L5.6,8.87C4.61,9.72 3.78,10.78 3.18,12Z"></path>
-              </svg>
-            )}
-          </span>
-        </span>
+          <div className="absolute inset-y-0 right-0 top-2 flex items-center pr-3 text-sm leading-5">
+            <span
+              onClick={() => setPasswordToggle(!passwordtoggle)}
+              className="cursor-pointer"
+            >
+              {!passwordtoggle ? (
+                <svg
+                  className="h-6 fill-black"
+                  focusable="false"
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  data-testid="EyeOutlineIcon"
+                >
+                  <path d="M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z"></path>
+                </svg>
+              ) : (
+                <svg
+                  className="h-6 fill-black"
+                  focusable="false"
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  data-testid="EyeOffOutlineIcon"
+                >
+                  <path d="M2,5.27L3.28,4L20,20.72L18.73,22L15.65,18.92C14.5,19.3 13.28,19.5 12,19.5C7,19.5 2.73,16.39 1,12C1.69,10.24 2.79,8.69 4.19,7.46L2,5.27M12,9A3,3 0 0,1 15,12C15,12.35 14.94,12.69 14.83,13L11,9.17C11.31,9.06 11.65,9 12,9M12,4.5C17,4.5 21.27,7.61 23,12C22.18,14.08 20.79,15.88 19,17.19L17.58,15.76C18.94,14.82 20.06,13.54 20.82,12C19.17,8.64 15.76,6.5 12,6.5C10.91,6.5 9.84,6.68 8.84,7L7.3,5.47C8.74,4.85 10.33,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C12.69,17.5 13.37,17.43 14,17.29L11.72,15C10.29,14.85 9.15,13.71 9,12.28L5.6,8.87C4.61,9.72 3.78,10.78 3.18,12Z"></path>
+                </svg>
+              )}
+            </span>
+          </div>
+        </div>
         <Button
           variant="default"
           className="h-14 w-full active:bg-primary"
