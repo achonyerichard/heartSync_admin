@@ -1,4 +1,4 @@
-
+"use client"
 import MembershipTable from "@/components/tables/MembershipTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import Link from "next/link";
 import React from "react";
 
 const Page = () => {
+  
   return (
     <div className="">
       <div className="mb-4 flex flex-col items-center justify-between lg:flex-row">
