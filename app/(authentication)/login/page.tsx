@@ -81,9 +81,9 @@ const Page = () => {
           onFocus={(e) => handleErrorChange(e.target.name, false, "")}
           message={error.email.message}
         />{" "}
-        <span className="relative">
+        <span className="relative mb-14">
           <Input
-            className={`transition3 focus:border-gray-500 mb-14 h-14 bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
+            className={`transition3 focus:border-gray-500  h-14 bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
             placeholder="Password"
             name="password"
             type={passwordtoggle ? "password" : "text"}
