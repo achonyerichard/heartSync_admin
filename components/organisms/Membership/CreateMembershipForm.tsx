@@ -36,7 +36,7 @@ const EditMembershipForm = () => {
     <div className="lg:m-10 rounded-sm border border-gray">
       <form className="p-4">
         <Input
-          className={`transition3 focus:border-gray-500 mb-7 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
+          className={`transition3 border-gray mb-7 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
           placeholder="Title"
           name="tiitle"
           //   onChange={handleInputChange}
@@ -45,7 +45,7 @@ const EditMembershipForm = () => {
         />{" "}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Input
-            className={`transition3 focus:border-gray-500 mb-7 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
+            className={`transition3 border-gray mb-7 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
             placeholder="Price"
             name="price"
             type="number"
@@ -54,7 +54,7 @@ const EditMembershipForm = () => {
             //   message={error.email.message}
           />
           <Input
-            className={`transition3 focus:border-gray-500 mb-7 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
+            className={`transition3 border-gray mb-7 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
             placeholder="Insert a Hex Code"
             name="color"
             type="text"
@@ -71,7 +71,7 @@ const EditMembershipForm = () => {
           {benefits.map((benefit, index) => (
             <li key={index} className="mb-2 flex items-center gap-2">
               <Input
-                className={`transition3 focus:border-gray-500 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
+                className={`transition3 border-gray h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
                 placeholder="Add a benefit "
                 name="color"
                 type="text"

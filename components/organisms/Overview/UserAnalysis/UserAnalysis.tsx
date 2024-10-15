@@ -57,11 +57,12 @@ const DataCard = ({
         >
           {total}
         </h6>
+        <div className="!w-full relative mx-auto">
         <LineGraph
           lineData={lineData} //
           borderColor={borderColor} //""
           gradientColor={gradientColor} //""
-        />
+        /></div>
       </div>
     </CustomCard>
   );
@@ -82,7 +83,7 @@ const UserAnalysis = () => {
   };
   return (
     <div className="grid-cols-12 gap-x-4 xl:grid">
-      <div className="col-span-8 grow-0 max-xl:mb-5">
+      <div className="col-span-8 grow-0 max-xl:mb-5 flex flex-col">
         {" "}
         <CustomTitle title="User Analysis">
           <svg
@@ -99,7 +100,7 @@ const UserAnalysis = () => {
             />
           </svg>
         </CustomTitle>
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
+        <div className="grid grid-cols-2 gap-4 xl:grid-cols-3 grow">
           <DataCard
             gradientColor="#22c55e40"
             lineData={[1, 3, 2, 5, 2.5, 7, 4, 8, 5]}

@@ -35,7 +35,7 @@ const Page = () => {
       </div>
       <div className="flex justify-start">
         <Input
-          className="transition3 focus:border-gray-500 mx-auto hidden h-10 rounded-lg bg-gray lg:block lg:w-72"
+          className="transition3 border-gray mx-auto hidden h-10 rounded-lg bg-gray lg:block lg:w-72"
           placeholder="Search anything..."
         />
       </div>

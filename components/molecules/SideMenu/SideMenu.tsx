@@ -23,6 +23,7 @@ import logout from "@/public/images/icons/logout.svg";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUtilAuth } from "@/context/UtilityContext";
+import { deleteCookie } from "cookies-next";
 
 const SideMenu = () => {
   const router = useRouter();
@@ -64,13 +65,13 @@ const SideMenu = () => {
     };
 
     // Add event listener for window resize
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup function to remove event listener when component unmounts
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
-  }, []); 
+  }, []);
 
   const index = menu.findIndex(
     (rte) => rte.route.toLowerCase() === path.split("/")[1].split("?")[0],
@@ -82,10 +83,10 @@ const SideMenu = () => {
         className={`${open ? "fixed bottom-0 left-0 right-0 top-0 z-20 bg-black/20 backdrop-blur-sm xl:hidden" : "hidden"}`}
       />
       <aside
-        className={`transition2 fixed bottom-0 top-0 z-20 flex shrink-0 flex-col bg-secondary xl:sticky xl:h-screen ${open ? "w-3/5 max-xl:left-0 md:w-2/5 xl:w-1/5" : "max-xl:-left-64 xl:w-[108px]"}`}
+        className={`transition2 fixed bottom-0 top-0 z-20 flex shrink-0 flex-col bg-secondary xl:sticky h-screen ${open ? "w-3/5 max-xl:left-0 md:w-2/5 xl:w-1/5" : "max-xl:-left-64 xl:w-[108px]"}`}
       >
         <div
-          className={`transition2 relative flex h-20 items-center justify-between bg-primary py-5 xl:h-[88px] ${open ? "px-3  xl:px-9" : "py-4 px-3 xl:px-6"}`}
+          className={`transition2 relative shrink-0 flex h-16 items-center justify-between bg-primary py-2 lg:h-[88px] ${open ? "px-3 xl:px-9" : "px-3 py-4 xl:px-6"}`}
         >
           <span
             className={`transition2 relative ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}
@@ -137,7 +138,7 @@ const SideMenu = () => {
           </button>
         </div>
         <div
-          className={`transition2 relative flex grow flex-col justify-between py-4 xl:py-7 ${open ? "px-3 xl:px-9" : "px-3 xl:px-6"}`}
+          className={`scroll transition2 relative flex grow flex-col justify-between py-4 xl:py-7 overflow-y-auto ${open ? "px-3 xl:px-9" : "px-3 xl:px-6"}`}
         >
           <div>
             <h6
@@ -212,7 +213,9 @@ const SideMenu = () => {
               <div
                 className="transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-[10px] bg-transparent px-2 py-2 hover:bg-primary xl:px-4 xl:py-3"
                 onClick={() => {
-                  router.push("/settings");
+                  deleteCookie('isLoggedIn');
+                  deleteCookie('token')
+                  router.push('/login')
                 }}
               >
                 <Image src={logout} alt={`settings icon`} className="" />

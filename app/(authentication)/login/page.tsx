@@ -4,6 +4,7 @@ import { emailRegex } from "@/lib/regex";
 import { Input } from "@/components/ui/input";
 import logo from "@/public/images/logo_1.png";
 import { useMutate } from "@/hooks/useHttpRequest";
+import { toast } from "react-toastify";
 import React, { ChangeEvent, SyntheticEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@radix-ui/themes";
@@ -34,17 +35,18 @@ const Page = () => {
   const { mutate, isLoading } = useMutate(
     "post",
     "auth/adminLogin",
-    (data) => {
+    (data) => {toast.success(data?.data.message)
       setCookie("isLoggedIn", true, { maxAge: 31536000 });
       setCookie("token", data?.data.data.accessToken, { maxAge: 31536000 });
       localStorage.setItem("user", data?.data.data);
       setHttpHeaders(data?.data.data.accessToken);
-      router.push("/overview");
+     router.push("/overview");
+     
     },
     undefined,
-    (err) => {
-      handleErrorChange("email", true, "");
-      handleErrorChange("password", true, "");
+    (err:any) => {
+      
+     toast.error(err.response.data.message)
     },
   );
 
@@ -65,18 +67,20 @@ const Page = () => {
 
   return (
     <div className="h-fit w-full">
-      <header className="mb-7 flex flex-col lg:items-start items-center ">
-      <Image
-        src={logo}
-        alt="auth_logo"
-        className="mb-10 h-auto w-full lg:max-w-[189px] rounded-3xl object-cover "
-      />
-      <h3 className=" text-3xl lg:text-[56px] lg:text-left text-center font-bold text-primary">Welcome Back</h3>
+      <header className="mb-7 flex flex-col items-center lg:items-start">
+        <Image
+          src={logo}
+          alt="auth_logo"
+          className="mb-10 h-auto w-full rounded-3xl object-cover lg:max-w-[189px]"
+        />
+        <h3 className="text-center text-3xl font-bold text-primary lg:text-left lg:text-[56px]">
+          Welcome Back
+        </h3>
       </header>
-     
+
       <form onSubmit={submitHandler} className="w-full lg:w-10/12">
         <Input
-          className={`transition3 focus:border-gray-500 mb-7 h-14 bg-gray ${error.email.error ? "border-primary text-primary" : ""}`}
+          className={`transition3 border-gray mb-7 h-14 bg-gray ${error.email.error ? "border-primary text-primary" : ""}`}
           placeholder="Email address"
           name="email"
           onChange={handleInputChange}
@@ -85,7 +89,7 @@ const Page = () => {
         />{" "}
         <div className="relative mb-14 w-full">
           <Input
-            className={`transition3 focus:border-gray-500 h-14 bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
+            className={`transition3 border-gray h-14 bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
             placeholder="Password"
             name="password"
             type={passwordtoggle ? "password" : "text"}
