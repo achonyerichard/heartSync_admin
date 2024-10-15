@@ -174,7 +174,7 @@ const Page = () => {
             Add New Gifts
           </Button>
         </div>
-        <div className="grid grid-cols-2 gap-2 xl:grid-cols-3 xl:gap-3">
+        <div className="grid grid-cols-1 gap-2 xl:grid-cols-3 xl:gap-3">
           {items.map((item: any) => (
             <Item
               item={item}
