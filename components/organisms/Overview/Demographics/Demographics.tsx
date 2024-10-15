@@ -19,7 +19,7 @@ interface MarkerData {
 
 // GeoJson URL for world map
 const geoUrl =
-  "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson";
+  "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
 
 const Demographics: React.FC = () => {
   // Define the markers data with the correct type
