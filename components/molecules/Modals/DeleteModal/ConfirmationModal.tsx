@@ -25,7 +25,7 @@ const ConfirmModal = ({
   };
 
   return (
-    <div className="relative max-h-[95vh] w-[35%] overflow-y-auto rounded-xl border-t-4 border-green-500 bg-white p-6">
+    <div className="relative max-h-[95vh]w-[90%] lg:w-[35%] overflow-y-auto rounded-xl border-t-4 border-green-500 bg-white p-6">
       {" "}
       <div className="mb-5 flex items-center gap-x-2.5">
         <CalendarCheck  size={20} color="green" />

@@ -18,7 +18,7 @@ const Page = () => {
   return (
     <div className="">
      
-      <div className="mb-4 flex flex-col lg:flex-row items-center justify-between">
+      <div className="mb-4 flex flex-col lg:flex-row gap-y-2 items-center justify-between">
         <div className="flex items-center gap-x-2.5">
           <svg
             width="32"

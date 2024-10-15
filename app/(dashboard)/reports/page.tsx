@@ -35,7 +35,7 @@ const Page = () => {
 
           <span className="text-[20px] font-bold">All Reports</span>
         </div>
-        <div className="flex items-center gap-x-2.5">
+        <div className="flex items-center lg:flex-row flex-col gap-y-3 gap-x-2.5">
           <DatePicker
             showIcon
             className="text-gray-700 cursor-pointer rounded-[16px] bg-white px-4 py-2 shadow-lg placeholder:pl-2 placeholder:text-sm placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
