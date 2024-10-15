@@ -20,7 +20,7 @@ const Modal = ({ children, open, setOpen }: Props) => {
 
   return (
     <div
-      className={`fixed left-0 right-0 top-0 z-40 flex h-screen max-xl:h-screen max-xl:pt-16 xl:items-center xl:justify-center ${
+      className={`fixed left-0 right-0 top-0 z-40 items-center justify-center flex h-screen max-xl:h-screen max-xl:pt-16 xl:items-center xl:justify-center ${
         open ? "" : "hidden"
       }`}
     >

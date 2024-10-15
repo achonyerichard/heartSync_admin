@@ -40,7 +40,7 @@ const AddModal = ({
   };
 
   return (
-    <div className="h--auto relative max-h-[95vh] overflow-y-auto rounded-xl bg-white p-6 lg:w-2/5">
+    <div className="h--auto relative max-h-[95vh] w-[90%] lg:w-[35%] overflow-y-auto rounded-xl bg-white p-6 lg:w-2/5">
       {" "}
       <div className="mb-5 flex items-center gap-x-2.5">
         <svg

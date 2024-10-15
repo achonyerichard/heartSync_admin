@@ -17,7 +17,7 @@ const Page = () => {
   
   return (
     <div className="">
-      <div className="mb-4 flex flex-col items-center justify-between lg:flex-row">
+      <div className="mb-4 flex flex-col items-center gap-y-2  justify-between lg:flex-row">
         <div className="flex items-center gap-x-2.5">
           <HandCoinsIcon color="red" size={25} />
 
