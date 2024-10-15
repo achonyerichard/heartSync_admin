@@ -100,7 +100,7 @@ const UserAnalysis = () => {
             />
           </svg>
         </CustomTitle>
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-3 grow">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 grow">
           <DataCard
             gradientColor="#22c55e40"
             lineData={[1, 3, 2, 5, 2.5, 7, 4, 8, 5]}
