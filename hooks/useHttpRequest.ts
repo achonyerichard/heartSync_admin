@@ -10,10 +10,10 @@ interface PaginatedResponse<T> {
 }
 
 interface PaginationOptions {
-  dataKey?: string; // Key for the actual data array
-  totalPagesKey?: string; // Key for total pages
-  totalItemsKey?: string; // Key for total items
-  currentPageKey?: string; // Key for current page
+  dataKey?: string; 
+  totalPagesKey?: string; 
+  totalItemsKey?: string; 
+  currentPageKey?: string; 
 }
 
 interface PaginationHookReturn<T> {
@@ -83,7 +83,7 @@ export const usePaginatedFetch = <T>(
   errorfn?: (err: any) => void,
 ): PaginationHookReturn<T> => {
   const {
-    dataKey = "data", // Defaults if not provided
+    dataKey = "data", 
     totalPagesKey = "totalPages",
     totalItemsKey = "totalItems",
     currentPageKey = "currentPage",
@@ -96,18 +96,18 @@ export const usePaginatedFetch = <T>(
         params: { page, limit },
       });
 
-      // Use dynamic keys based on the options
+   
       return {
-        data: response.data.data[dataKey], // Use the dynamic key for data
-        totalPages: response.data.data[totalPagesKey], // Use the dynamic key for totalPages
-        totalItems: response.data.data[totalItemsKey], // Use the dynamic key for totalItems
-        currentPage: response.data.data[currentPageKey], // Use the dynamic key for currentPage
+        data: response.data.data[dataKey],
+        totalPages: response.data.data[totalPagesKey], 
+        totalItems: response.data.data[totalItemsKey], 
+        currentPage: response.data.data[currentPageKey], 
       };
     },
     {
       onSuccess: success,
       onError: errorfn,
-      keepPreviousData: true, // This helps keep the data from the previous page during fetching
+      keepPreviousData: true,
     },
   );
 
