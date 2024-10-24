@@ -2,6 +2,28 @@ import http, { httpForm } from "./axios";
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery, useMutation, useQueries } from "@tanstack/react-query";
 
+interface PaginatedResponse<T> {
+  data: T[];
+  totalPages: number;
+  totalItems: number;
+  currentPage: number;
+}
+
+interface PaginationOptions {
+  dataKey?: string; // Key for the actual data array
+  totalPagesKey?: string; // Key for total pages
+  totalItemsKey?: string; // Key for total items
+  currentPageKey?: string; // Key for current page
+}
+
+interface PaginationHookReturn<T> {
+  isLoading: boolean;
+  data: PaginatedResponse<T> | undefined | any;
+  error: unknown;
+  isError: boolean;
+  refetch: () => void;
+}
+
 interface hookReturn {
   isLoading: boolean;
   data: AxiosResponse | undefined;
@@ -50,6 +72,53 @@ export const useFetch = (
   };
 };
 
+
+export const usePaginatedFetch = <T>(
+  key: string,
+  url: string,
+  page: number,
+  limit: number,
+  options?: PaginationOptions,
+  success?: (data: AxiosResponse) => void,
+  errorfn?: (err: any) => void,
+): PaginationHookReturn<T> => {
+  const {
+    dataKey = "data", // Defaults if not provided
+    totalPagesKey = "totalPages",
+    totalItemsKey = "totalItems",
+    currentPageKey = "currentPage",
+  } = options || {};
+
+  const { isLoading, data, error, isError, refetch } = useQuery(
+    [key, page, limit],
+    async () => {
+      const response = await http.get(url, {
+        params: { page, limit },
+      });
+
+      // Use dynamic keys based on the options
+      return {
+        data: response.data.data[dataKey], // Use the dynamic key for data
+        totalPages: response.data.data[totalPagesKey], // Use the dynamic key for totalPages
+        totalItems: response.data.data[totalItemsKey], // Use the dynamic key for totalItems
+        currentPage: response.data.data[currentPageKey], // Use the dynamic key for currentPage
+      };
+    },
+    {
+      onSuccess: success,
+      onError: errorfn,
+      keepPreviousData: true, // This helps keep the data from the previous page during fetching
+    },
+  );
+
+  return {
+    isLoading,
+    data,
+    error,
+    isError,
+    refetch,
+  };
+};
 //for handling PUT, POST, PATCH, DELETE requests
 export const useMutate = (
   method: string,

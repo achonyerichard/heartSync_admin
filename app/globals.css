@@ -45,6 +45,9 @@ html {
 .next-link {
   @apply rounded-lg border border-primary px-4 py-2 font-semibold text-primary hover:bg-primary hover:text-white;
 }
+.active-link {
+  @apply rounded-lg border border-primary font-semibold py-1 text-white bg-primary hover:bg-lightpink;
+}
 
 .break-item {
   @apply mx-1;

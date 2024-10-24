@@ -3,24 +3,44 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@radix-ui/themes";
 import { Input } from "@/components/ui/input";
 import { Category } from "@/interfaces/category";
-
+interface IFormInput {
+  name: string;
+  country: string;
+}
 const AddModal = ({
   type,
   setOpen,
+  loading,
+  mutate,
 }: {
   type: "add" | "update";
   setOpen: () => void;
+  loading: Boolean;
+
+  mutate: any;
 }) => {
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Category>();
+  } = useForm<IFormInput>({
+    defaultValues: {
+      country: "", // Default value for the select
+    },
+  });
 
   const queryClient = useQueryClient();
   const closeModal = () => {
@@ -28,7 +48,7 @@ const AddModal = ({
   };
 
   const onSubmit: SubmitHandler<Category> = (data: any) => {
-    console.log(data);
+    mutate(data);
   };
 
   return (
@@ -48,16 +68,16 @@ const AddModal = ({
           />
         </svg>
 
-        <span className="text-[20px] font-bold capitalize">{type} Category</span>
+        <span className="text-[20px] font-bold capitalize">{type} Store</span>
       </div>
       <form className="" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex gap-x-10">
-          <div className="w-full">
-            <div className="mb-3">
+          <div className="mb-14 flex w-full flex-col gap-y-4">
+            <div className="">
               <label className="text-xs font-bold text-black"> Name</label>
               <Input
-                className={`transition3 border-gray mb-14 h-14 bg-gray`}
-                placeholder="Enter a Category"
+                className={`transition3 h-14 border-gray bg-gray`}
+                placeholder="Enter a Store Name"
                 {...register("name", {
                   required: "Name is required",
                 })}
@@ -68,12 +88,39 @@ const AddModal = ({
                 </span>
               )}
             </div>
+            <div>
+              <label className="text-xs font-bold text-black"> Region</label>
+              <Controller
+                name="country"
+                control={control}
+                rules={{ required: "Region is required" }}
+                render={({ field: { onChange, value } }) => (
+                  <Select onValueChange={onChange} value={value}>
+                    <SelectTrigger className="h-14 w-full rounded-[16px] border-none bg-gray">
+                      <SelectValue placeholder="Select a Region" />
+                    </SelectTrigger>
+
+                    <SelectContent className="border-none bg-gray">
+                      <SelectItem value="united states of America">
+                        United States of America
+                      </SelectItem>
+                      <SelectItem value="nigeria">Nigeria</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.country && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.country.message}
+                </p>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex items-center justify-between gap-x-3">
           {" "}
           <Button type="submit" color="red" className="min-w-[100px]">
-            {false ? <Spinner size="2" loading={true} /> : <>Add Category</>}
+            {loading ? <Spinner size="2" loading={true} /> : <>Add Store</>}
           </Button>{" "}
           <Button
             variant="outline"

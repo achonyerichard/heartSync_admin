@@ -53,6 +53,11 @@ const SideMenu = () => {
     {
       inactive: marketplace_inactive,
       active: marketplace_active,
+      route: "Store",
+    },
+    {
+      inactive: marketplace_inactive,
+      active: marketplace_active,
       route: "Marketplace",
     },
     { inactive: roles_inactive, active: roles_active, route: "Roles" },
