@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Membership } from "@/interfaces";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
@@ -7,17 +7,17 @@ import Modal from "../molecules/Modals/ModalBackground";
 import DeleteModal from "../molecules/Modals/DeleteModal/DeleteModal";
 export const items: Membership[] = [
   {
-    id:1,
+    id: 1,
     title: "Basic Plan",
     price: 9.99,
     color: "#e2e8f0", // Hex color for light gray
     benefits: ["Access to basic features", "Email support", "Community access"],
   },
   {
-    id:2,
+    id: 2,
     title: "Standard Plan",
     price: 19.99,
-    color: "#60a5fa", 
+    color: "#60a5fa",
     benefits: [
       "Access to all features",
       "Priority email support",
@@ -26,7 +26,7 @@ export const items: Membership[] = [
     ],
   },
   {
-    id:3,
+    id: 3,
     title: "Premium Plan",
     price: 29.99,
     color: "#fbbf24",
@@ -39,7 +39,7 @@ export const items: Membership[] = [
     ],
   },
   {
-    id:4,
+    id: 4,
     title: "Business Plan",
     price: 49.99,
     color: "#34d399",
@@ -51,7 +51,7 @@ export const items: Membership[] = [
     ],
   },
   {
-    id:5,
+    id: 5,
     title: "Enterprise Plan",
     price: 99.99,
     color: "#a78bfa",
@@ -65,8 +65,8 @@ export const items: Membership[] = [
   },
 ];
 const MembershipTable = () => {
-    const [open, setOpen] = useState(false);
-    const typeRef = useRef<"delete" | "update">("delete");
+  const [open, setOpen] = useState(false);
+  const typeRef = useRef<"delete" | "update">("delete");
   let itemsPerPage = 4;
   const [itemOffset, setItemOffset] = useState(0);
 
@@ -124,12 +124,14 @@ const MembershipTable = () => {
                     {`$ ${item?.price}`}
                   </td>
                   <td
-                    className={`whitespace-no-wrap px-5 py-3   text-sm font-normal capitalize`}
+                    className={`whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize`}
                   >
-                    <p className={` w-fit rounded-[20px] px-2 py-1`} style={{backgroundColor:item.color}}>
-                    Active
+                    <p
+                      className={`w-fit rounded-[20px] px-2 py-1`}
+                      style={{ backgroundColor: item.color }}
+                    >
+                      Active
                     </p>
-                    
                   </td>
 
                   <td className="flex items-center px-5 py-3 text-sm">
@@ -185,13 +187,14 @@ const MembershipTable = () => {
         nextLinkClassName="next-link"
         breakClassName="break-item"
         breakLinkClassName="break-link"
-        activeClassName="active"
+        activeClassName="active-link"
       />
-       <Modal open={open} setOpen={() => setOpen(false)}>
+      <Modal open={open} setOpen={() => setOpen(false)}>
         <DeleteModal
+          loading={false}
           type={typeRef.current}
           close={() => setOpen(false)}
-          handleDelete={()=>{}}
+          handleDelete={() => {}}
           text="Do you to permanently delete this Membership type? "
         />
       </Modal>
