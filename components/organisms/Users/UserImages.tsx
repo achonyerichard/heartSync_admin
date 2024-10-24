@@ -54,6 +54,7 @@ const UserImages = () => {
       </div>
       <Modal open={open} setOpen={() => setOpen(false)}>
         <DeleteModal
+          loading={false}
           type={typeRef.current}
           close={() => setOpen(false)}
           handleDelete={() => {}}
