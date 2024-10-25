@@ -55,7 +55,7 @@ const Page = () => {
 
   const { data, isLoading, refetch } = useFetch(
     "get",
-    "category/fetch",
+    "stores/getStores",
     (data) => {},
     undefined,
   );
@@ -89,11 +89,11 @@ const Page = () => {
       </div>
 
       {isLoading ? (
-        <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
+        <div className="mt-5 grid lg:grid-cols-3 grid-cols-1 gap-4 [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
+          <Skeleton className="h-40 w-full" />
+          <Skeleton className="h-40 w-full" />
+          <Skeleton className="h-40 w-full" />
+          <Skeleton className="h-40 w-full" />
         </div>
       ) : (
         <StoreCards data={data} refetch={refetch} />

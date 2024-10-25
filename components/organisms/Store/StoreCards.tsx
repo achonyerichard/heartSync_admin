@@ -20,7 +20,7 @@ const latest = [
 const StoreCards = ({ data, refetch }: { data: any; refetch: any }) => {
   const [open, setOpen] = useState(false);
 
-  const categories = useMemo(() => {
+  const stores = useMemo(() => {
     if (!data?.data?.data) {
       return;
     }
@@ -32,7 +32,7 @@ const StoreCards = ({ data, refetch }: { data: any; refetch: any }) => {
   const regionRef = useRef<string>("");
   const { mutate: deleteMutate, isLoading: deleteLoading } = useMutate(
     "delete",
-    `/category/deleteCategory/${idRef.current}`,
+    `/stores/deleteStore/${idRef.current}`,
     (data) => {
       toast.success(data?.data.message, {
         position: "top-center",
@@ -67,7 +67,7 @@ const StoreCards = ({ data, refetch }: { data: any; refetch: any }) => {
   );
   const { mutate: editMutate, isLoading: editLoading } = useMutate(
     "patch",
-    `/category/updateCategory`,
+    `/stores/updateStore/${idRef.current}`,
     (data) => {
       toast.success(data?.data.message, {
         position: "top-center",
@@ -107,12 +107,12 @@ const StoreCards = ({ data, refetch }: { data: any; refetch: any }) => {
 
   const endOffset = itemOffset + itemsPerPage;
 
-  const currentItems = categories?.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(categories?.length / itemsPerPage);
+  const currentItems = stores?.slice(itemOffset, endOffset);
+  const pageCount = Math.ceil(stores?.length / itemsPerPage);
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: any }) => {
-    const newOffset = (event.selected * itemsPerPage) % categories?.length;
+    const newOffset = (event.selected * itemsPerPage) % stores?.length;
     console.log(
       `User requested page number ${event.selected}, which is offset ${newOffset}`,
     );
@@ -121,13 +121,16 @@ const StoreCards = ({ data, refetch }: { data: any; refetch: any }) => {
   return (
     <div>
       <div className="mt-5 grid grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-4">
-        {latest.map(
+        {currentItems?.map(
           (item: {
             country: string;
             _id: React.Key | null | string;
             name: string;
           }) => (
-            <Card key={item._id} className="border-none py-3 shadow-xl">
+            <Card
+              key={item._id}
+              className="border-none bg-lightpink py-3 shadow-xl"
+            >
               <CardContent>
                 <span className="flex items-center gap-2">
                   <Store size={12} />
@@ -146,7 +149,7 @@ const StoreCards = ({ data, refetch }: { data: any; refetch: any }) => {
                     idRef.current = item._id?.toString()!;
                     setModalType("delete");
                   }}
-                  className={`whitespace-no-wrap text-md cursor-pointer rounded-md bg-lightpink p-2 font-semibold text-black`}
+                  className={`whitespace-no-wrap text-md cursor-pointer rounded-md bg-pink-200 p-2 font-semibold text-black`}
                 >
                   <svg
                     width="14"
@@ -171,7 +174,7 @@ const StoreCards = ({ data, refetch }: { data: any; refetch: any }) => {
                     nameRef.current = item?.name?.toString()!;
                     regionRef.current = item?.country?.toString()!;
                   }}
-                  className={`whitespace-no-wrap text-md cursor-pointer rounded-md bg-lightpink p-2 font-semibold text-black`}
+                  className={`whitespace-no-wrap text-md cursor-pointer rounded-md bg-pink-200 p-2 font-semibold text-black`}
                 >
                   <Edit2Icon size={15} color="green" />
                 </button>
