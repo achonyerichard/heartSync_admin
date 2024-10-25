@@ -24,8 +24,11 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUtilAuth } from "@/context/UtilityContext";
 import { deleteCookie } from "cookies-next";
-
+import { useAuth } from "@/context/AuthContext";
+import { AdminRole } from "@/lib/Constants";
 const SideMenu = () => {
+  const { userRole } = useAuth();
+  console.log("role", userRole);
   const router = useRouter();
   const path = usePathname();
   const { open, setOpen } = useUtilAuth();
@@ -38,31 +41,56 @@ const SideMenu = () => {
       inactive: overview_inactive,
       active: overview_active,
       route: "Overview",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
     },
-    { inactive: users_inactive, active: users_active, route: "Users" },
+    {
+      inactive: users_inactive,
+      active: users_active,
+      route: "Users",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
+    },
     {
       inactive: payments_inactive,
       active: payments_active,
       route: "Membership",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
     },
     {
       inactive: orders_inactive,
       active: category_active,
       route: "Category",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
     },
     {
       inactive: marketplace_inactive,
       active: marketplace_active,
       route: "Store",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN, AdminRole.MARKETER],
     },
     {
       inactive: marketplace_inactive,
       active: marketplace_active,
       route: "Marketplace",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN, AdminRole.MARKETER],
     },
-    { inactive: roles_inactive, active: roles_active, route: "Roles" },
-    { inactive: orders_inactive, active: orders_active, route: "Orders" },
-    { inactive: reports_inactive, active: reports_active, route: "Reports" },
+    {
+      inactive: roles_inactive,
+      active: roles_active,
+      route: "Roles",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
+    },
+    {
+      inactive: orders_inactive,
+      active: orders_active,
+      route: "Orders",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN, AdminRole.MARKETER],
+    },
+    {
+      inactive: reports_inactive,
+      active: reports_active,
+      route: "Reports",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
+    },
   ];
 
   useEffect(() => {
@@ -164,7 +192,7 @@ const SideMenu = () => {
                 }}
               />
               {menu.map((menuitem, index) => (
-                <Link
+              menuitem.roles?.includes(userRole)&& <Link
                   className={`transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 xl:rounded-[10px] xl:px-4 xl:py-3 ${path.includes(menuitem.route.toLowerCase()) ? "" : "hover:bg-primary"}`}
                   key={index}
                   href={`/${menuitem.route.toLowerCase()}`}

@@ -11,9 +11,11 @@ import { Spinner } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
 import { setHttpHeaders } from "@/lib/setHeaders";
+import { useAuth } from "@/context/AuthContext";
 
 const Page = () => {
   const router = useRouter();
+    const { setUserRole } = useAuth();
   const [login, setLogin] = useState({ email: "", password: "" });
   const [passwordtoggle, setPasswordToggle] = useState(true);
   const [error, setError] = useState({
@@ -37,8 +39,10 @@ const Page = () => {
     "auth/adminLogin",
     (data) => {toast.success(data?.data.message)
       setCookie("isLoggedIn", true, { maxAge: 31536000 });
+      setCookie("heartsyncRole", data?.data?.data?.role);
       setCookie("token", data?.data.data.accessToken, { maxAge: 31536000 });
-      localStorage.setItem("user", data?.data.data);
+      localStorage.setItem("heartsync_user", JSON.stringify(data?.data.data));
+      setUserRole(data?.data?.data?.role);
       setHttpHeaders(data?.data.data.accessToken);
      router.push("/overview");
      
