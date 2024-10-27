@@ -6,44 +6,73 @@ import ReactPaginate from "react-paginate";
 import Modal from "../molecules/Modals/ModalBackground";
 import DeleteModal from "../molecules/Modals/DeleteModal/DeleteModal";
 import { Edit2Icon } from "lucide-react";
+import { useMutate } from "@/hooks/useHttpRequest";
+import { toast } from "react-toastify";
 export const items: Users[] = [
   {
     id: "1",
     name: "John Doe",
     createdAt: "28-03-2004",
-    email:"",
+    email: "",
     role: "Marketer",
   },
   {
     id: "2",
-    email:"",
+    email: "",
     name: "John Doe",
     createdAt: "28-03-2004",
     role: "Admin",
   },
 ];
-const CategoryTable = () => {
+
+const CategoryTable = ({
+  data,
+  refetch,
+  pageCount,
+  setCurrentPage,
+  itemsPerPage,
+  currentPage,
+}: {
+  data: any;
+  refetch: any;
+  pageCount: any;
+  setCurrentPage: any;
+  itemsPerPage: any;
+  currentPage: any;
+}) => {
+  const idRef = useRef("");
   const [open, setOpen] = useState(false);
   const typeRef = useRef<"delete" | "update">("delete");
-  let itemsPerPage = 4;
+
   const [itemOffset, setItemOffset] = useState(0);
 
   // Simulate fetching items from another resources.
   // (This could be items from props; or items loaded in a local state
   // from an API endpoint with useEffect and useState)
   const endOffset = itemOffset + itemsPerPage;
-  console.log(`Loading items from ${itemOffset} to ${endOffset}`);
   const currentItems = items.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(items.length / itemsPerPage);
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: any }) => {
     const newOffset = (event.selected * itemsPerPage) % items.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`,
-    );
+    setCurrentPage(event.selected);
     setItemOffset(newOffset);
   };
+
+  const { mutate, isLoading } = useMutate(
+    "delete",
+    `admins/deleteAdmin/${idRef.current}`,
+    (data) => {
+      setOpen(false);
+      toast.success("Admin deleted successfully");
+      refetch();
+    },
+    undefined,
+    () => {
+      toast.error("Failed to remove admin");
+    },
+  );
+
   return (
     <div>
       <div className="h-auto w-full overflow-auto bg-white shadow-xl">
@@ -72,7 +101,7 @@ const CategoryTable = () => {
 
           {currentItems && (
             <tbody className="w-full text-black shadow-lg [&>*:nth-child(even)]:bg-white [&>*:nth-child(odd)]:bg-lightpink">
-              {currentItems?.map((item, index) => (
+              {data?.data?.map((item: any, index: number) => (
                 <tr key={item?.id} className="">
                   <td className="px-5 py-3 text-sm">{index + 1}</td>
                   <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
@@ -82,7 +111,7 @@ const CategoryTable = () => {
                     {item?.role}
                   </td>
                   <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {`$ ${item?.createdAt}`}
+                    {`$ ${item?.createdAt.split("T")[0]}`}
                   </td>
 
                   <td className="flex items-center px-5 py-3 text-sm">
@@ -91,6 +120,7 @@ const CategoryTable = () => {
                       onClick={() => {
                         setOpen(true);
                         typeRef.current = "delete";
+                        idRef.current = item?._id;
                       }}
                       className={`whitespace-no-wrap text-md text-Hwhite cursor-pointer rounded-md p-2 font-semibold`}
                     >
@@ -146,10 +176,10 @@ const CategoryTable = () => {
       />
       <Modal open={open} setOpen={() => setOpen(false)}>
         <DeleteModal
-          loading={false}
+          loading={isLoading}
           type={typeRef.current}
           close={() => setOpen(false)}
-          handleDelete={() => {}}
+          handleDelete={() => mutate({})}
           text="Do you to permanently delete this Membership type? "
         />
       </Modal>

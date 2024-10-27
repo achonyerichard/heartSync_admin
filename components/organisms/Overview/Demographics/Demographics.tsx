@@ -1,7 +1,9 @@
 "use client";
 import { CustomCard } from "@/components/atoms/CustomCard/CustomCard";
 import CustomTitle from "@/components/atoms/CustomTitle/CustomTitle";
-import React from "react";
+import { useFetch } from "@/hooks/useHttpRequest";
+import { AxiosResponse } from "axios";
+import React, { useState } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -11,17 +13,43 @@ import {
 
 // Define the types for the markers
 interface MarkerData {
-  name: string;
+  name: string | string;
   coordinates: [number, number]; // Tuple type to enforce exactly two numbers
   color: string;
   users: number;
 }
 
 // GeoJson URL for world map
-const geoUrl =
-  "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
+const geoUrl = "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
 
 const Demographics: React.FC = () => {
+  const [marker, setMarker] = useState<{ name: string; value: number; color: string }[] | null>(null);
+
+  function getRandomRGBA() {
+    const r = Math.floor(Math.random() * 256); // Red (0-255)
+    const g = Math.floor(Math.random() * 256); // Green (0-255)
+    const b = Math.floor(Math.random() * 256); // Blue (0-255)
+    const a = Math.random().toFixed(2); // Alpha (0-1, with 2 decimal places)
+
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }
+
+  const { isLoading: isSubLoading } = useFetch(
+    "country_count",
+    "profiles/countryCount",
+    (data: AxiosResponse) => {
+      const mapped = Object.entries(data.data.data).map(([key, value]) => {
+        return { name: key, value: value, color: getRandomRGBA() } as {
+          name: string;
+          value: number;
+          color: string;
+        };
+      });
+
+      setMarker(mapped);
+    },
+  );
+
   // Define the markers data with the correct type
   const markers: MarkerData[] = [
     { name: "USA", coordinates: [-100.0, 40.0], color: "hotpink", users: 167 },
@@ -74,7 +102,7 @@ const Demographics: React.FC = () => {
           />
         </svg>
       </CustomTitle>
-      <CustomCard className="grid-cols-3 gap-x-10 xl:grid mb-5">
+      <CustomCard className="mb-5 grid-cols-3 gap-x-10 xl:grid">
         {/* World Map */}
         <ComposableMap className="col-span-2">
           <Geographies
@@ -112,10 +140,10 @@ const Demographics: React.FC = () => {
         </ComposableMap>
 
         {/* User Statistics */}
-        <div className="flex flex-col justify-evenly xl:py-10 max-xl:gap-y-3">
-          {markers.map(({ name, color, users }: MarkerData) => (
+        <div className="flex flex-col justify-evenly max-xl:gap-y-3 xl:py-10">
+          {marker?.map(({ name, value, color }) => (
             <div key={name} className="flex items-center justify-between">
-              <span className="flex items-center gap-x-2 font-urbanist text-sm font-semibold xl:text-lg">
+              <span className="flex items-center gap-x-2 font-urbanist text-sm font-semibold capitalize xl:text-lg">
                 <svg
                   width="30"
                   height="30"
@@ -133,7 +161,7 @@ const Demographics: React.FC = () => {
               </span>
 
               <span className="font-urbanist text-sm font-medium text-[#5B5B5B]">
-                {users} Users
+                {value} Users
               </span>
             </div>
           ))}

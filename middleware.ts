@@ -1,37 +1,61 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { AdminRole, MARKETER_ROUTES } from "./lib/Constants";
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const loggedIn = request.cookies.has("isLoggedIn");
-  let role = request.cookies.get("heartsyncRole");
-  console.log(
-    "relax",
-    role,
-    pathname,
-    MARKETER_ROUTES.includes(pathname.split("/")[1]),
-    role?.value === AdminRole.SUPER_ADMIN,
-  );
+  const loggedIn = request.cookies.has("token");
+  const role = request.cookies.get("heartsyncRole")!;
+
+  enum AdminRole {
+    ADMIN = "admin",
+    MODERATOR = "moderator",
+    MARKETER = "marketer",
+    SUPER_ADMIN = "super_admin",
+  }
+
+  const MARKETER_ROUTES = ["/store", "/marketplace", "/orders"];
+  const MODERATOR_ROUTES = ["", "", ""];
+  const ADMIN_ROUTES = ["", ""];
   const auth = ["/login"];
 
-  if (loggedIn && auth.includes(request.nextUrl.pathname)) {
-    return NextResponse.redirect(new URL("/overview", request.url));
-  } else if (!loggedIn && !auth.includes(request.nextUrl.pathname)) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  } else if (!loggedIn && request.nextUrl.pathname === "/") {
-    return NextResponse.redirect(new URL("/login", request.url));
-  } else if (loggedIn && request.nextUrl.pathname === "/") {
-     if (
-       role?.value === AdminRole.MARKETER &&
-       !MARKETER_ROUTES.includes(pathname.split("/")[1])
-     ) {
-       return NextResponse.redirect(new URL("/marketplace", request.url));
-     } else return NextResponse.redirect(new URL("/overview", request.url));
+  const ROUTE_PROTECTOR: {
+    [key: string]: { routes: string[]; redirect: string };
+  } = {
+    marketer: {
+      routes: ["/store", "/marketplace", "/orders"],
+      redirect: "/marketplace",
+    },
+    moderator: { routes: ["", ""], redirect: "" },
+    admin: { routes: ["", ""], redirect: "" },
+    super_admin: { routes: [], redirect: "" },
+  };
+
+  if (loggedIn) {
+    if (
+      auth.includes(request.nextUrl.pathname) ||
+      request.nextUrl.pathname === "/" ||
+      (role?.value !== AdminRole.SUPER_ADMIN &&
+        !ROUTE_PROTECTOR[role?.value!].routes.includes(
+          request.nextUrl.pathname,
+        ))
+    ) {
+      return NextResponse.redirect(
+        new URL(ROUTE_PROTECTOR[role?.value!].redirect, request.url),
+      );
+    } else if (
+      role?.value === AdminRole.MARKETER &&
+      !MARKETER_ROUTES.includes(request.nextUrl.pathname)
+    ) {
+      return NextResponse.redirect(new URL("/marketplace", request.url));
+    }
+    return;
+  } else if (!loggedIn) {
+    if (!auth.includes(request.nextUrl.pathname)) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
   }
   return NextResponse.next();
 }

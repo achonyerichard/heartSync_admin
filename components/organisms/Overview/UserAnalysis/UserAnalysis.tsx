@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { CustomCard } from "@/components/atoms/CustomCard/CustomCard";
 import {
   Select,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import CustomTitle from "@/components/atoms/CustomTitle/CustomTitle";
 import LineGraph from "@/components/molecules/LineGraph/LineGraph";
+import { useFetch } from "@/hooks/useHttpRequest";
 
 const DataCard = ({
   title,
@@ -23,7 +24,7 @@ const DataCard = ({
   title: string;
   selectValue: string;
   selectContent: { title: string; value: string }[];
-  total: string;
+  total: string | number;
   lineData: number[];
   borderColor: string;
   gradientColor: string;
@@ -57,18 +58,40 @@ const DataCard = ({
         >
           {total}
         </h6>
-        <div className="!w-full relative mx-auto">
-        <LineGraph
-          lineData={lineData} //
-          borderColor={borderColor} //""
-          gradientColor={gradientColor} //""
-        /></div>
+        <div className="relative mx-auto !w-full">
+          <LineGraph
+            lineData={lineData} //
+            borderColor={borderColor} //""
+            gradientColor={gradientColor} //""
+          />
+        </div>
       </div>
     </CustomCard>
   );
 };
 
 const UserAnalysis = () => {
+  const [userCount, setUserCount] = useState({
+    total: 0,
+    subscribed: 0,
+    free: 0,
+  });
+  const { isLoading } = useFetch("users", "users/getTotalUsers", (data) => {
+    console.log(data);
+    setUserCount((prev) => ({ ...prev, total: data?.data.data.totalUsers }));
+  });
+  const { isLoading: isSubLoading } = useFetch(
+    "sub_user_count",
+    "profiles/getTotalActiveUsers",
+    (data) => {
+      console.log(data);
+      setUserCount((prev) => ({
+        ...prev,
+        subscribed: data?.data.data.activeSubscriptions,
+        free: data?.data.data.inactiveSubscriptions,
+      }));
+    },
+  );
   const dummyData = [
     { category: "Total", total: 2000 },
     { category: "Premium", total: 2000 },
@@ -83,7 +106,7 @@ const UserAnalysis = () => {
   };
   return (
     <div className="grid-cols-12 gap-x-4 xl:grid">
-      <div className="col-span-8 grow-0 max-xl:mb-5 flex flex-col">
+      <div className="col-span-8 flex grow-0 flex-col max-xl:mb-5">
         {" "}
         <CustomTitle title="User Analysis">
           <svg
@@ -100,13 +123,13 @@ const UserAnalysis = () => {
             />
           </svg>
         </CustomTitle>
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 grow">
+        <div className="grid grow grid-cols-1 gap-4 xl:grid-cols-3">
           <DataCard
             gradientColor="#22c55e40"
             lineData={[1, 3, 2, 5, 2.5, 7, 4, 8, 5]}
             borderColor="#22c55e"
-            total="1000"
-            selectValue="Theme"
+            total={userCount.total}
+            selectValue="Last 7 Days"
             selectContent={[
               { value: "last 7 days", title: "Last 7 Days" },
               { value: "last month", title: "Last Month" },
@@ -118,7 +141,7 @@ const UserAnalysis = () => {
             gradientColor="#FB902840"
             lineData={[1, 3, 2, 5, 2.5, 7, 4, 8, 5]}
             borderColor="#FB9028"
-            total="200"
+            total={userCount.subscribed}
             selectValue="Theme"
             selectContent={[
               { value: "last 7 days", title: "Last 7 Days" },
@@ -131,7 +154,7 @@ const UserAnalysis = () => {
             gradientColor="#EB1F7D40"
             lineData={[1, 3, 2, 5, 2.5, 7, 4, 8, 5]}
             borderColor="#EB1F7D"
-            total="800"
+            total={userCount.free}
             selectValue="Theme"
             selectContent={[
               { value: "last 7 days", title: "Last 7 Days" },
@@ -170,12 +193,9 @@ const UserAnalysis = () => {
             </defs>
           </svg>
         </CustomTitle>
-        <CustomCard className="flex grow flex-col max-xl:gap-y-2 gap-y-2">
-          {dummyData.map((cat, index) => (
-            <div
-              className="flex items-center justify-between"
-              key={index}
-            >
+        <CustomCard className="flex grow flex-col gap-y-2 max-xl:gap-y-2">
+          {dummyData.slice(0,3).map((cat, index) => (
+            <div className="flex items-center justify-between" key={index}>
               <div
                 className="rounded-full px-2 py-1 text-sm text-white xl:py-1.5 xl:text-sm"
                 style={{ backgroundColor: pillColor[cat.category] }}
