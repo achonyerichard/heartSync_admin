@@ -1,13 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
-import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@radix-ui/themes";
 import { Input } from "@/components/ui/input";
-import { Category } from "@/interfaces/category";
+import { useFetch, useMutate } from "@/hooks/useHttpRequest";
 import {
   Select,
   SelectContent,
@@ -16,31 +14,63 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Users } from "@/interfaces";
+import { AdminRole } from "@/lib/Constants";
+import { toast } from "react-toastify";
 
 const AddModal = ({
   type,
   setOpen,
+  refetch,
 }: {
   type: "add" | "update";
   setOpen: () => void;
+  refetch: () => void;
 }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<Users>();
+  const [store, setStore] = useState("");
+  const [role, setRole] = useState("");
   const [passwordtoggle, setPasswordToggle] = useState(true);
-  const queryClient = useQueryClient();
   const closeModal = () => {
     setOpen();
   };
 
+  const { mutate, isLoading } = useMutate(
+    "post",
+    "admins/create",
+    (data) => {
+      toast.success("Admin created successfully");
+      refetch();
+    },
+    undefined,
+    () => {},
+  );
+
+  const { data: stores } = useFetch("stores", "stores/getStores");
   const onSubmit: SubmitHandler<Users> = (data: any) => {
-    console.log(data);
+    if (role === "marketer") {
+      mutate({
+        ...data,
+        recipientEmail: data.email,
+        email: `user${Math.floor(100000 + Math.random() * 900000)}@heartsync.com`,
+        role,
+        store,
+      });
+    } else {
+      mutate({
+        ...data,
+        recipientEmail: data.email,
+        email: `user${Math.floor(100000 + Math.random() * 900000)}@heartsync.com`,
+        role,
+      });
+    }
   };
 
   return (
-    <div className="h--auto relative max-h-[95vh] w-[90%] lg:w-[35%] overflow-y-auto rounded-xl bg-white p-6 lg:w-2/5">
+    <div className="relative h-auto max-h-[95vh] w-[90%] overflow-y-auto rounded-xl bg-white p-6 lg:w-1/3">
       {" "}
       <div className="mb-5 flex items-center gap-x-2.5">
         <svg
@@ -64,8 +94,8 @@ const AddModal = ({
             <div className="mb-3">
               <label className="text-xs font-bold text-black"> Name</label>
               <Input
-                className={`transition3 border-gray h-14 bg-gray`}
-                placeholder="Enter a Category"
+                className={`transition3 h-14 border-gray bg-gray`}
+                placeholder="Enter a name"
                 {...register("name", {
                   required: "Name is required",
                 })}
@@ -81,7 +111,7 @@ const AddModal = ({
             <div className="mb-3">
               <label className="text-xs font-bold text-black"> Email:</label>
               <Input
-                className={`transition3 border-gray h-14 bg-gray`}
+                className={`transition3 h-14 border-gray bg-gray`}
                 placeholder="Enter an email"
                 {...register("email", {
                   required: "Email is required",
@@ -99,60 +129,95 @@ const AddModal = ({
               {" "}
               Select a Role:
             </label>
-            <Select>
+            <Select
+              onValueChange={(prop: string) => {
+                setRole(prop);
+              }}
+            >
               <SelectTrigger className="h-14 w-full rounded-[16px] border-none bg-gray">
                 <SelectValue placeholder="Select a Role" />
               </SelectTrigger>
               <SelectContent className="border-none bg-gray">
-                <SelectItem value="light">Sub-Admin</SelectItem>
-                <SelectItem value="dark">Admin</SelectItem>
+                <SelectItem value={AdminRole.SUPER_ADMIN}>
+                  Super Admin
+                </SelectItem>
+                <SelectItem value={AdminRole.ADMIN}>Admin</SelectItem>{" "}
+                <SelectItem value={AdminRole.MARKETER}>Marketer</SelectItem>
+                <SelectItem value={AdminRole.MODERATOR}>Moderator</SelectItem>
               </SelectContent>
             </Select>
           </div>
+          {role === "marketer" && (
+            <div className="mb-3">
+              <label className="text-xs font-bold text-black">
+                {" "}
+                Select a Store:
+              </label>
+              <Select
+                onValueChange={(prop: string) => {
+                  setStore(prop);
+                }}
+              >
+                <SelectTrigger className="h-14 w-full rounded-[16px] border-none bg-gray">
+                  <SelectValue placeholder="Select a Role" />
+                </SelectTrigger>
+                <SelectContent className="border-none bg-gray">
+                  {stores &&
+                    stores?.data.data.map((store: any, index: number) => (
+                      <SelectItem value={store._id} key={index}>
+                        {store.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div>
             <label className="text-xs font-bold text-black">Password:</label>
             <span className="relative">
               <Input
-                className={`transition3 border-gray mb-14 h-14 bg-gray`}
+                className={`transition3 mb-14 h-14 border-gray bg-gray`}
                 placeholder="Password"
-                name="password"
                 type={passwordtoggle ? "password" : "text"}
+                {...register("password", {
+                  required: "Password is required",
+                })}
               />
-               <div className="absolute inset-y-0 right-0 top-4 pr-3 flex items-center text-sm leading-5">
-            <span
-              onClick={() => setPasswordToggle(!passwordtoggle)}
-              className="cursor-pointer"
-            >
-              {!passwordtoggle ? (
-                <svg
-                  className="h-6  fill-black"
-                  focusable="false"
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  data-testid="EyeOutlineIcon"
+              <div className="absolute inset-y-0 right-0 top-4 flex items-center pr-3 text-sm leading-5">
+                <span
+                  onClick={() => setPasswordToggle(!passwordtoggle)}
+                  className="cursor-pointer"
                 >
-                  <path d="M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z"></path>
-                </svg>
-              ) : (
-                <svg
-                  className="h-6  fill-black"
-                  focusable="false"
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  data-testid="EyeOffOutlineIcon"
-                >
-                  <path d="M2,5.27L3.28,4L20,20.72L18.73,22L15.65,18.92C14.5,19.3 13.28,19.5 12,19.5C7,19.5 2.73,16.39 1,12C1.69,10.24 2.79,8.69 4.19,7.46L2,5.27M12,9A3,3 0 0,1 15,12C15,12.35 14.94,12.69 14.83,13L11,9.17C11.31,9.06 11.65,9 12,9M12,4.5C17,4.5 21.27,7.61 23,12C22.18,14.08 20.79,15.88 19,17.19L17.58,15.76C18.94,14.82 20.06,13.54 20.82,12C19.17,8.64 15.76,6.5 12,6.5C10.91,6.5 9.84,6.68 8.84,7L7.3,5.47C8.74,4.85 10.33,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C12.69,17.5 13.37,17.43 14,17.29L11.72,15C10.29,14.85 9.15,13.71 9,12.28L5.6,8.87C4.61,9.72 3.78,10.78 3.18,12Z"></path>
-                </svg>
-              )}
-            </span>
-          </div>
+                  {!passwordtoggle ? (
+                    <svg
+                      className="h-6 fill-black"
+                      focusable="false"
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      data-testid="EyeOutlineIcon"
+                    >
+                      <path d="M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z"></path>
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-6 fill-black"
+                      focusable="false"
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      data-testid="EyeOffOutlineIcon"
+                    >
+                      <path d="M2,5.27L3.28,4L20,20.72L18.73,22L15.65,18.92C14.5,19.3 13.28,19.5 12,19.5C7,19.5 2.73,16.39 1,12C1.69,10.24 2.79,8.69 4.19,7.46L2,5.27M12,9A3,3 0 0,1 15,12C15,12.35 14.94,12.69 14.83,13L11,9.17C11.31,9.06 11.65,9 12,9M12,4.5C17,4.5 21.27,7.61 23,12C22.18,14.08 20.79,15.88 19,17.19L17.58,15.76C18.94,14.82 20.06,13.54 20.82,12C19.17,8.64 15.76,6.5 12,6.5C10.91,6.5 9.84,6.68 8.84,7L7.3,5.47C8.74,4.85 10.33,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C12.69,17.5 13.37,17.43 14,17.29L11.72,15C10.29,14.85 9.15,13.71 9,12.28L5.6,8.87C4.61,9.72 3.78,10.78 3.18,12Z"></path>
+                    </svg>
+                  )}
+                </span>
+              </div>
             </span>
           </div>
         </div>
         <div className="flex items-center justify-between gap-x-3">
           {" "}
           <Button type="submit" color="red" className="min-w-[100px]">
-            {false ? <Spinner size="2" loading={true} /> : <>Add Admin</>}
+            {isLoading ? <Spinner size="2" loading={true} /> : <>Add Admin</>}
           </Button>{" "}
           <Button
             variant="outline"

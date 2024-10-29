@@ -6,16 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import CustomTitle from "@/components/atoms/CustomTitle/CustomTitle";
+import { useRouter } from "next/navigation";
 
-const MarketplaceModal = ({
-  type,
-  setOpen,
-  item,
-}: {
-  type: "add" | "update";
-  setOpen: () => void;
-  item?: any;
-}) => {
+const CreateProduct = () => {
+  const router = useRouter();
   const [details, setDetails] = useState({
     name: "",
     description: "",
@@ -54,19 +48,13 @@ const MarketplaceModal = ({
     }
   };
 
-  const closeModal = () => {
-    setOpen();
-    setDetails({ name: "", description: "", stock: 0, price: 0, image: null });
-    setPreview(null);
-  };
-
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     console.log(details);
   };
 
   return (
-    <div className="relative max-xl:h-screen xl:max-h-[95vh] w-full xl:w-10/12 overflow-y-auto rounded-xl bg-white p-4 xl:p-6">
+    <div className="relative w-full overflow-y-auto rounded-xl bg-white p-4 max-xl:h-screen xl:max-h-[95vh] xl:p-6">
       {" "}
       <CustomTitle title="Gifts">
         <svg
@@ -83,12 +71,12 @@ const MarketplaceModal = ({
         </svg>
       </CustomTitle>
       <form onSubmit={handleSubmit} className="">
-        <div className="flex max-xl:flex-col gap-x-10">
+        <div className="flex gap-x-10 max-xl:flex-col">
           <div className="max-xl:order-2 xl:w-3/5">
             <div className="mb-6">
               <Label>Gift Name</Label>
               <Input
-                className="transition3 bg-gray border-gray mt-2 h-10 rounded-lg"
+                className="transition3 mt-2 h-10 rounded-lg border-gray bg-gray"
                 placeholder="Adidas Ultra Boost"
                 name="name"
                 onChange={handleInputChange}
@@ -99,7 +87,7 @@ const MarketplaceModal = ({
               {" "}
               <Label>Gift Description</Label>
               <Textarea
-                className="transition3 bg-gray border-gray mt-2 h-10 rounded-lg"
+                className="transition3 mt-2 h-10 rounded-lg border-gray bg-gray"
                 name="description"
                 onChange={handleInputChange}
                 value={details.description}
@@ -108,7 +96,7 @@ const MarketplaceModal = ({
             <div className="mb-6">
               <Label>Stock Quantity</Label>
               <Input
-                className="transition3 bg-gray border-gray mt-2 h-10 rounded-lg"
+                className="transition3 mt-2 h-10 rounded-lg border-gray bg-gray"
                 placeholder="21"
                 type="number"
                 name="stock"
@@ -119,7 +107,7 @@ const MarketplaceModal = ({
             <div className="mb-6">
               <Label>Price</Label>
               <Input
-                className="transition3 bg-gray border-gray mt-2 h-10 rounded-lg"
+                className="transition3 mt-2 h-10 rounded-lg border-gray bg-gray"
                 placeholder="500"
                 type="number"
                 name="price"
@@ -128,7 +116,7 @@ const MarketplaceModal = ({
               />
             </div>
           </div>
-          <div className="max-xl:order1 xl:w-2/5 max-xl:mb-5">
+          <div className="max-xl:order1 max-xl:mb-5 xl:w-2/5">
             {" "}
             <Label>Gift Description</Label>
             <label
@@ -196,18 +184,18 @@ const MarketplaceModal = ({
           <Button
             variant="default"
             type="submit"
-            onClick={setOpen}
+            onClick={() => {}}
             className="max-xl:w-1/2 xl:min-w-[100px]"
           >
-            {type === "add" ? "Add" : "Update"}
+            add
           </Button>{" "}
           <Button
-            variant={type === "add" ? "secondary" : "outline"}
+            variant={"outline"}
             type="submit"
-            onClick={closeModal}
+            onClick={() => router.back()}
             className="max-xl:w-1/2 xl:min-w-[100px]"
           >
-            {type === "add" ? "Cancel" : "Delete"}
+            Cancel
           </Button>
         </div>{" "}
       </form>
@@ -215,4 +203,4 @@ const MarketplaceModal = ({
   );
 };
 
-export default MarketplaceModal;
+export default CreateProduct;
