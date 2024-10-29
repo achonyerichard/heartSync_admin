@@ -208,7 +208,7 @@ const SideMenu = () => {
                     className="h-6 w-6 xl:h-auto xl:w-auto"
                   />
                   <span
-                    className={`transition2 text-nowrap text-sm xl:text-base ${path.includes(menuitem.route.toLowerCase()) ? "text-primary group-hover:text-white" : "text-white"} ${open ? "visible w-[100%]" : "invisible w-[0%] overflow-hidden"}`}
+                    className={`transition2 text-nowrap text-sm xl:text-base ${path.includes(menuitem.route.toLowerCase()) ? "text-primary group-hover:text-primary" : "text-white"} ${open ? "visible w-[100%]" : "invisible w-[0%] overflow-hidden"}`}
                   >
                     {menuitem.route}
                   </span>
