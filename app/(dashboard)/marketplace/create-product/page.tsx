@@ -7,54 +7,160 @@ import { Textarea } from "@/components/ui/textarea";
 import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import CustomTitle from "@/components/atoms/CustomTitle/CustomTitle";
 import { useRouter } from "next/navigation";
+import { useFetch, useFormDataMutate, useMutate } from "@/hooks/useHttpRequest";
+import { useSearchParams } from "next/navigation";
+import Select from "react-select";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { colors } from "@/data/colors";
+import { toast } from "react-toastify";
 
 const CreateProduct = () => {
+  const colorArray = Object.keys(colors).map((color) => ({
+    label: color,
+    value: color,
+  }));
   const router = useRouter();
-  const [details, setDetails] = useState({
-    name: "",
-    description: "",
-    stock: 0,
-    price: 0,
-    image: null,
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("id");
+  const productName = searchParams.get("name");
+  const productDescription = searchParams.get("description");
+  const productPrice = searchParams.get("price");
+  const productStock = searchParams.get("stock");
+  const productImages = searchParams.get("imagesUrl")?.split("!");
+
+  const [details, setDetails] = useState<{
+    name: string;
+    description: string;
+    stock: number;
+    price: number;
+    image: File[];
+    category: string[];
+    color: string[];
+    productMaterial: string;
+    size: string[];
+  }>({
+    name: productName ? productName : "",
+    description: productDescription ? productDescription : "",
+    stock: productStock ? Number(productStock) : 0,
+    price: productPrice ? Number(productPrice) : 0,
+    image: [],
+    category: [],
+    color: [],
+    productMaterial: "",
+    size: [],
   });
-  const [preview, setPreview] = useState<any>(null);
-
-  useEffect(() => {
-    let img: any;
-    if (details.image) {
-      img = URL.createObjectURL(details.image as any);
-      setPreview(img);
-    }
-
-    // Clean up URLs when component unmounts
-    return () => {
-      URL.revokeObjectURL(img);
-    };
-  }, [details.image]);
+  const [preview, setPreview] = useState<string[]>(
+    productImages ? productImages : [],
+  );
+  const [categories, setCategories] = useState<any>([]);
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const arr: File[] = [];
+    const prev: string[] = [];
     if (e.target.files) {
       for (let i = 0; i < e.target.files.length; i++) {
         arr.push(e.target.files[i]);
+        prev.push(URL.createObjectURL(e.target.files[i]));
       }
-      console.log(arr);
-      setDetails((prev) => ({ ...prev, [e.target.name]: arr[0] }));
+      setDetails((prev) => ({ ...prev, [e.target.name]: [...arr] }));
+      setPreview(prev);
     }
   };
 
+  const {} = useFetch(
+    "get",
+    "category/fetch",
+    (data) => {
+      const selects = data.data.data.map((category: any) => ({
+        value: category.name,
+        label: category.name,
+      }));
+      setCategories(selects);
+    },
+    undefined,
+  );
+
+  const { mutate: create } = useFormDataMutate(
+    "post",
+    "products/create",
+    (data) => {
+      toast.success("Product created successfully");
+      router.push("/marketplace");
+    },
+    undefined,
+    () => {
+      toast.error("Could not create product");
+    },
+  );
+
+  const { mutate: edit } = useMutate(
+    "patch",
+    `products/updateProduct/${productId}`,
+    () => {
+      toast.success("Product edited successfully");
+      router.push("/marketplace");
+    },
+    undefined,
+    () => {
+      toast.error("Could not edit product");
+    },
+  );
+
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    console.log(details);
+    const {
+      name,
+      description,
+      stock,
+      price,
+      image,
+      category,
+      color,
+      productMaterial,
+      size,
+    } = details;
+    if (
+      name &&
+      description &&
+      stock &&
+      price &&
+      image.length > 0 &&
+      category.length > 0 &&
+      color.length > 0 &&
+      productMaterial &&
+      size &&
+      !productId
+    ) {
+      const form = new FormData();
+      form.append("name", name);
+      form.append("description", description);
+      form.append("stock", stock.toString());
+      form.append("price", price.toString());
+
+      //form.append("size", size);
+      form.append("productMaterial", productMaterial);
+      image.forEach((img) => form.append("photos", img));
+      size.forEach((sze) => form.append("size", sze));
+      category.forEach((category) => form.append("category", category));
+      color.forEach((color) => form.append("color", color));
+      create(form);
+    } else if (productId) {
+      edit(details);
+    }
   };
 
   return (
-    <div className="relative w-full overflow-y-auto rounded-xl bg-white p-4 max-xl:h-screen xl:max-h-[95vh] xl:p-6">
+    <div className="relative w-full rounded-xl bg-white p-4 xl:p-6">
       {" "}
       <CustomTitle title="Gifts">
         <svg
@@ -94,6 +200,88 @@ const CreateProduct = () => {
               />
             </div>
             <div className="mb-6">
+              <Label>Gift Color</Label>
+              <Select
+                placeholder="Select Cleaners"
+                classNames={{
+                  control: () =>
+                    "border border-gray-300 rounded-2xl dark:bg-black text-white",
+                  input: () =>
+                    " w-full  px-5  md:text-sm rounded-md   dark:placeholder:text-gray-100 dark:text-white text-black",
+                  menu: () => "dark:bg-black dark:text-white hover:text-black",
+                  singleValue: () => "text-black",
+                }}
+                onChange={(prop) => {
+                  const values = prop
+                    ? prop.map((option: any) => option.value)
+                    : [];
+
+                  setDetails((prev) => ({ ...prev, color: values }));
+                }}
+                options={colorArray}
+                isMulti
+              />
+            </div>
+            <div className="mb-6">
+              <Label>Gift Material</Label>
+              <Input
+                className="transition3 mt-2 h-10 rounded-lg border-gray bg-gray"
+                placeholder="Adidas Ultra Boost"
+                name="productMaterial"
+                onChange={handleInputChange}
+                value={details.productMaterial}
+              />
+            </div>
+            <div className="mb-6">
+              <Label>Gift Size</Label>
+              <Select
+                placeholder="Select Size"
+                classNames={{
+                  control: () =>
+                    "border border-gray-300 rounded-2xl dark:bg-black text-white",
+                  input: () =>
+                    " w-full  px-5  md:text-sm rounded-md   dark:placeholder:text-gray-100 dark:text-white text-black",
+                  menu: () => "dark:bg-black dark:text-white hover:text-black",
+                  singleValue: () => "text-black",
+                }}
+                onChange={(prop) => {
+                  const values = prop
+                    ? prop.map((option: any) => option.value)
+                    : [];
+
+                  setDetails((prev) => ({ ...prev, size: values }));
+                }}
+                options={["XS", "SM", "MD", "LG", "XL", "2XL", "3XL"].map(
+                  (size) => ({ value: size, label: size }),
+                )}
+                isMulti
+              />
+            </div>
+            <div className="mb-6">
+              <label className="text-xs font-bold text-black"> Category:</label>
+
+              <Select
+                placeholder="Select Category"
+                classNames={{
+                  control: () =>
+                    "border border-gray-300 rounded-2xl dark:bg-black text-white",
+                  input: () =>
+                    " w-full  px-5  md:text-sm rounded-md   dark:placeholder:text-gray-100 dark:text-white text-black",
+                  menu: () => "dark:bg-black dark:text-white hover:text-black",
+                  singleValue: () => "text-black",
+                }}
+                onChange={(prop) => {
+                  const values = prop
+                    ? prop.map((option: any) => option.value)
+                    : [];
+
+                  setDetails((prev) => ({ ...prev, category: values }));
+                }}
+                options={categories}
+                isMulti
+              />
+            </div>
+            <div className="mb-6">
               <Label>Stock Quantity</Label>
               <Input
                 className="transition3 mt-2 h-10 rounded-lg border-gray bg-gray"
@@ -124,30 +312,60 @@ const CreateProduct = () => {
             >
               {preview ? (
                 <>
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 48 48"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="absolute top-7 z-10 translate-x-5 cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDetails((prev: any) => ({ ...prev, image: null }));
+                  {" "}
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: true,
                     }}
                   >
-                    <path
-                      d="M24 4.5C20.1433 4.5 16.3731 5.64366 13.1664 7.78634C9.95963 9.92903 7.46027 12.9745 5.98436 16.5377C4.50845 20.1008 4.12228 24.0216 4.8747 27.8043C5.62711 31.5869 7.4843 35.0615 10.2114 37.7886C12.9386 40.5157 16.4131 42.3729 20.1957 43.1253C23.9784 43.8777 27.8992 43.4916 31.4623 42.0156C35.0255 40.5397 38.071 38.0404 40.2137 34.8336C42.3564 31.6269 43.5 27.8567 43.5 24C43.4945 18.83 41.4383 13.8732 37.7826 10.2174C34.1268 6.56167 29.1701 4.50546 24 4.5ZM31.0613 28.9387C31.2006 29.0781 31.3112 29.2436 31.3866 29.4257C31.462 29.6077 31.5008 29.8029 31.5008 30C31.5008 30.1971 31.462 30.3923 31.3866 30.5743C31.3112 30.7564 31.2006 30.9219 31.0613 31.0613C30.9219 31.2006 30.7564 31.3112 30.5744 31.3866C30.3923 31.462 30.1971 31.5008 30 31.5008C29.8029 31.5008 29.6078 31.462 29.4257 31.3866C29.2436 31.3112 29.0781 31.2006 28.9388 31.0613L24 26.1206L19.0613 31.0613C18.9219 31.2006 18.7564 31.3112 18.5744 31.3866C18.3923 31.462 18.1971 31.5008 18 31.5008C17.8029 31.5008 17.6078 31.462 17.4257 31.3866C17.2436 31.3112 17.0781 31.2006 16.9388 31.0613C16.7994 30.9219 16.6888 30.7564 16.6134 30.5743C16.538 30.3923 16.4992 30.1971 16.4992 30C16.4992 29.8029 16.538 29.6077 16.6134 29.4257C16.6888 29.2436 16.7994 29.0781 16.9388 28.9387L21.8794 24L16.9388 19.0613C16.6573 18.7798 16.4992 18.398 16.4992 18C16.4992 17.602 16.6573 17.2202 16.9388 16.9387C17.2202 16.6573 17.602 16.4992 18 16.4992C18.3981 16.4992 18.7798 16.6573 19.0613 16.9387L24 21.8794L28.9388 16.9387C29.0781 16.7994 29.2436 16.6888 29.4257 16.6134C29.6078 16.538 29.8029 16.4992 30 16.4992C30.1971 16.4992 30.3923 16.538 30.5744 16.6134C30.7564 16.6888 30.9219 16.7994 31.0613 16.9387C31.2006 17.0781 31.3112 17.2436 31.3866 17.4257C31.462 17.6077 31.5008 17.8029 31.5008 18C31.5008 18.1971 31.462 18.3923 31.3866 18.5743C31.3112 18.7564 31.2006 18.9219 31.0613 19.0613L26.1206 24L31.0613 28.9387Z"
-                      fill="#F75555"
-                    />
-                  </svg>
-                  <Image
-                    src={preview}
-                    alt="gift image"
-                    className="h-auto max-h-[500px] w-full object-cover"
-                    width={500}
-                    height={500}
-                  />
+                    <CarouselContent>
+                      {" "}
+                      {preview.map(
+                        (prev: string, index: number, array: string[]) => (
+                          <CarouselItem className="relative" key={index}>
+                            {" "}
+                            <svg
+                              width="48"
+                              height="48"
+                              viewBox="0 0 48 48"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="absolute top-7 z-10 translate-x-5 cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const preview = array.filter(
+                                  (_, i: number) => i !== index,
+                                );
+                                const images = details.image.filter(
+                                  (_, i: number) => i !== index,
+                                );
+                                setDetails((prev) => ({
+                                  ...prev,
+                                  image: images,
+                                }));
+                                setPreview(preview);
+                              }}
+                            >
+                              <path
+                                d="M24 4.5C20.1433 4.5 16.3731 5.64366 13.1664 7.78634C9.95963 9.92903 7.46027 12.9745 5.98436 16.5377C4.50845 20.1008 4.12228 24.0216 4.8747 27.8043C5.62711 31.5869 7.4843 35.0615 10.2114 37.7886C12.9386 40.5157 16.4131 42.3729 20.1957 43.1253C23.9784 43.8777 27.8992 43.4916 31.4623 42.0156C35.0255 40.5397 38.071 38.0404 40.2137 34.8336C42.3564 31.6269 43.5 27.8567 43.5 24C43.4945 18.83 41.4383 13.8732 37.7826 10.2174C34.1268 6.56167 29.1701 4.50546 24 4.5ZM31.0613 28.9387C31.2006 29.0781 31.3112 29.2436 31.3866 29.4257C31.462 29.6077 31.5008 29.8029 31.5008 30C31.5008 30.1971 31.462 30.3923 31.3866 30.5743C31.3112 30.7564 31.2006 30.9219 31.0613 31.0613C30.9219 31.2006 30.7564 31.3112 30.5744 31.3866C30.3923 31.462 30.1971 31.5008 30 31.5008C29.8029 31.5008 29.6078 31.462 29.4257 31.3866C29.2436 31.3112 29.0781 31.2006 28.9388 31.0613L24 26.1206L19.0613 31.0613C18.9219 31.2006 18.7564 31.3112 18.5744 31.3866C18.3923 31.462 18.1971 31.5008 18 31.5008C17.8029 31.5008 17.6078 31.462 17.4257 31.3866C17.2436 31.3112 17.0781 31.2006 16.9388 31.0613C16.7994 30.9219 16.6888 30.7564 16.6134 30.5743C16.538 30.3923 16.4992 30.1971 16.4992 30C16.4992 29.8029 16.538 29.6077 16.6134 29.4257C16.6888 29.2436 16.7994 29.0781 16.9388 28.9387L21.8794 24L16.9388 19.0613C16.6573 18.7798 16.4992 18.398 16.4992 18C16.4992 17.602 16.6573 17.2202 16.9388 16.9387C17.2202 16.6573 17.602 16.4992 18 16.4992C18.3981 16.4992 18.7798 16.6573 19.0613 16.9387L24 21.8794L28.9388 16.9387C29.0781 16.7994 29.2436 16.6888 29.4257 16.6134C29.6078 16.538 29.8029 16.4992 30 16.4992C30.1971 16.4992 30.3923 16.538 30.5744 16.6134C30.7564 16.6888 30.9219 16.7994 31.0613 16.9387C31.2006 17.0781 31.3112 17.2436 31.3866 17.4257C31.462 17.6077 31.5008 17.8029 31.5008 18C31.5008 18.1971 31.462 18.3923 31.3866 18.5743C31.3112 18.7564 31.2006 18.9219 31.0613 19.0613L26.1206 24L31.0613 28.9387Z"
+                                fill="#F75555"
+                              />
+                            </svg>
+                            <Image
+                              src={prev}
+                              alt="gift image"
+                              className="h-auto max-h-[500px] w-full object-cover"
+                              width={500}
+                              height={500}
+                            />
+                          </CarouselItem>
+                        ),
+                      )}
+                    </CarouselContent>{" "}
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
                 </>
               ) : (
                 <>
@@ -167,15 +385,16 @@ const CreateProduct = () => {
                   <p className="text-center text-xs text-lightgray">
                     Drop your image here or browse <br />
                     .jpeg and .png are alloweed
-                  </p>
+                  </p>{" "}
+                  <input
+                    type="file"
+                    className="absolute cursor-pointer opacity-0"
+                    onChange={handleFileChange}
+                    name="image"
+                    multiple
+                  />
                 </>
               )}
-              <input
-                type="file"
-                className="absolute cursor-pointer opacity-0"
-                onChange={handleFileChange}
-                name="image"
-              />
             </label>
           </div>
         </div>
@@ -184,14 +403,13 @@ const CreateProduct = () => {
           <Button
             variant="default"
             type="submit"
-            onClick={() => {}}
             className="max-xl:w-1/2 xl:min-w-[100px]"
           >
             add
           </Button>{" "}
           <Button
             variant={"outline"}
-            type="submit"
+            type="button"
             onClick={() => router.back()}
             className="max-xl:w-1/2 xl:min-w-[100px]"
           >

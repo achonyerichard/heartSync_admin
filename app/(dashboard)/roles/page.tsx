@@ -13,7 +13,7 @@ import { Spinner } from "@radix-ui/themes";
 import { toast } from "react-toastify";
 
 const Page = () => {
-  let itemsPerPage = 1;
+  let itemsPerPage = 20;
   const typeRef = useRef<"add" | "update">("add");
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -34,7 +34,7 @@ const Page = () => {
   );
 
   useEffect(() => {
-    console.log(currentPage)
+    
     refetch;
   }, [currentPage]);
 

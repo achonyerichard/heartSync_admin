@@ -11,21 +11,35 @@ export const items: Users[] = [
     id: "1",
     name: "John Doe",
     createdAt: "28-03-2004",
-    email:"",
+    email: "",
     role: "Marketer",
   },
   {
     id: "2",
-    email:"",
+    email: "",
     name: "John Doe",
     createdAt: "28-03-2004",
     role: "Admin",
   },
 ];
-const CategoryTable = () => {
+const ProductTable = ({
+  data,
+  refetch,
+  pageCount,
+  setCurrentPage,
+  itemsPerPage,
+  currentPage,
+}: {
+  data: any;
+  refetch: any;
+  pageCount: any;
+  setCurrentPage: any;
+  itemsPerPage: any;
+  currentPage: any;
+}) => {
   const [open, setOpen] = useState(false);
   const typeRef = useRef<"delete" | "update">("delete");
-  let itemsPerPage = 4;
+
   const [itemOffset, setItemOffset] = useState(0);
 
   // Simulate fetching items from another resources.
@@ -34,7 +48,6 @@ const CategoryTable = () => {
   const endOffset = itemOffset + itemsPerPage;
   console.log(`Loading items from ${itemOffset} to ${endOffset}`);
   const currentItems = items.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(items.length / itemsPerPage);
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: any }) => {
@@ -53,38 +66,37 @@ const CategoryTable = () => {
               <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
                 S/N
               </th>
-
               <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
                 Title
+              </th>{" "}
+         
+              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                Price
               </th>
               <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
-                Role
+                Stock
               </th>
-              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
-                Date Created
-              </th>
-
               <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
                 Actions
               </th>
             </tr>
           </thead>
 
-          {currentItems && (
+          {data && (
             <tbody className="w-full text-black shadow-lg [&>*:nth-child(even)]:bg-white [&>*:nth-child(odd)]:bg-lightpink">
-              {currentItems?.map((item, index) => (
+              {data?.map((item: any, index: number) => (
                 <tr key={item?.id} className="">
                   <td className="px-5 py-3 text-sm">{index + 1}</td>
                   <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
                     {item?.name}
+                  </td>{" "}
+              
+                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                    {item?.price}
                   </td>
                   <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item?.role}
+                    {`$ ${item?.stock}`}
                   </td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {`$ ${item?.createdAt}`}
-                  </td>
-
                   <td className="flex items-center px-5 py-3 text-sm">
                     <button
                       value={"delete"}
@@ -157,4 +169,4 @@ const CategoryTable = () => {
   );
 };
 
-export default CategoryTable;
+export default ProductTable;

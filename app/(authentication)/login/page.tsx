@@ -39,7 +39,7 @@ const Page = () => {
     "auth/adminLogin",
     (data) => {toast.success(data?.data.message)
       setCookie("isLoggedIn", true, { maxAge: 31536000 });
-      setCookie("heartsyncRole", data?.data?.data?.role);
+      setCookie("heartsyncRole", data?.data?.data?.role, { maxAge: 31536000 });
       setCookie("token", data?.data.data.accessToken, { maxAge: 31536000 });
       localStorage.setItem("heartsync_user", JSON.stringify(data?.data.data));
       setUserRole(data?.data?.data?.role);

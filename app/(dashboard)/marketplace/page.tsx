@@ -21,13 +21,17 @@ const Item = ({
   item: any;
   onClick: (prop: any) => void;
 }) => {
+  const router = useRouter();
+  console.log(item);
   return (
     <CustomCard className="transition3 cursor-pointer">
       <div className="mb-2 items-center gap-x-4 xl:mb-4 xl:flex">
         <Image
-          src={item.image}
-          className="shrink-none h-auto w-full rounded-md max-xl:mb-2 max-xl:aspect-square max-xl:object-cover xl:h-20 xl:w-20 xl:rounded-lg"
+          src={item.imagesUrl[0]}
+          className="shrink-none h-auto w-full rounded-md object-cover max-xl:mb-2 max-xl:aspect-square xl:h-20 xl:w-20 xl:rounded-lg"
           alt=""
+          height={500}
+          width={500}
         />
         <div className="grow">
           <p className="text-sm font-semibold xl:text-base">{item.name}</p>
@@ -50,7 +54,15 @@ const Item = ({
         <Button variant="default" onClick={onClick} className="px-6">
           Delete
         </Button>{" "}
-        <Button variant="outline" onClick={() => {}} className="px-6">
+        <Button
+          variant="outline"
+          onClick={() => {
+            router.push(
+              `/marketplace/create-product?id=${item.productId}&name=${item.name}&description=${item.description}&price=${item.price}&stock=${item.stock}&imagesUrl=${item.imagesUrl.join("!")}`,
+            );
+          }}
+          className="px-6"
+        >
           Edit
         </Button>
       </div>
@@ -175,7 +187,9 @@ const Page = () => {
       refetch();
     },
     undefined,
-    () => {},
+    () => {
+      toast.error("Something went wrong");
+    },
   );
   console.log(data);
   return (
@@ -209,7 +223,16 @@ const Page = () => {
           Add New Gifts
         </Button>
       </div>
-      {role === "super_admin" && <ProductTable />}
+      {role === "super_admin" && (
+        <ProductTable
+          data={data?.data}
+          refetch={refetch}
+          pageCount={pageCount}
+          setCurrentPage={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+        />
+      )}
       {role === "marketer" && (
         <div className="">
           <div className="grid grid-cols-1 gap-2 xl:grid-cols-3 xl:gap-3">
@@ -220,7 +243,7 @@ const Page = () => {
                 onClick={(prop) => {
                   //setUpdateItem(prop);
                   setOpen(true);
-                  typeRef.current = item._id;
+                  typeRef.current = item.productId;
                 }}
               />
             ))}
