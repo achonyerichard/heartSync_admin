@@ -14,6 +14,16 @@ import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+
+
+// import required modules
+import { Autoplay} from "swiper/modules";
 
 const Item = ({
   item,
@@ -26,14 +36,30 @@ const Item = ({
   return (
     <CustomCard className="transition3 cursor-pointer">
       <div className="mb-2 items-center gap-x-4 xl:mb-4 xl:flex">
-        <Image
-          src={item.imagesUrl[0]}
-          className="shrink-none h-auto w-full rounded-md object-cover max-xl:mb-2 max-xl:aspect-square xl:h-20 xl:w-20 xl:rounded-lg"
-          alt=""
-          height={500}
-          width={500}
-        />
-        <div className="grow">
+        <Swiper
+          spaceBetween={30}
+          centeredSlides={true}
+          autoplay={{
+            delay: 2500,
+            disableOnInteraction: false,
+          }}
+          modules={[Autoplay]}
+          className="mySwiper w-4/12 grow-0"
+        > {item.imagesUrl.map((image: string, index: number) => (
+          <SwiperSlide>
+           
+              <Image
+                key={index}
+                src={image}
+                className="shrink-none h-auto w-full rounded-md object-cover max-xl:mb-2 max-xl:aspect-square xl:h-20 xl:w-20 xl:rounded-lg"
+                alt=""
+                height={500}
+                width={500}
+              />
+          
+          </SwiperSlide>  ))}
+        </Swiper>
+        <div className="grow w-8/12 shrink-0">
           <p className="text-sm font-semibold xl:text-base">{item.name}</p>
           <p className="mb-1 text-sm font-semibold text-lightgray xl:mb-2">
             {item.category}
@@ -135,7 +161,6 @@ const Page = () => {
         <Button
           variant="default"
           onClick={() => {
-           
             router.push("/marketplace/create-product");
           }}
           className=""
@@ -146,12 +171,12 @@ const Page = () => {
       {role === "super_admin" && (
         <>
           {isLoading ? (
-           <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
-           <Skeleton className="h-10 w-full" />
-           <Skeleton className="h-10 w-full" />
-           <Skeleton className="h-10 w-full" />
-           <Skeleton className="h-10 w-full" />
-         </div>
+            <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
           ) : (
             <ProductTable
               data={data?.data}
@@ -166,7 +191,6 @@ const Page = () => {
       )}
       {role === "marketer" && (
         <>
-          {" "}
           {isLoading ? (
             <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
               <Skeleton className="h-10 w-full" />
