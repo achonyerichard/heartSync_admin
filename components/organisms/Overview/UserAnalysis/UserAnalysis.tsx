@@ -77,14 +77,14 @@ const UserAnalysis = () => {
     free: 0,
   });
   const { isLoading } = useFetch("users", "users/getTotalUsers", (data) => {
-    console.log(data);
+
     setUserCount((prev) => ({ ...prev, total: data?.data.data.totalUsers }));
   });
   const { isLoading: isSubLoading } = useFetch(
     "sub_user_count",
     "profiles/getTotalActiveUsers",
     (data) => {
-      console.log(data);
+
       setUserCount((prev) => ({
         ...prev,
         subscribed: data?.data.data.activeSubscriptions,

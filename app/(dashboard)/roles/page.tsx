@@ -11,6 +11,7 @@ import Modal from "@/components/molecules/Modals/ModalBackground";
 import { useFetch, usePaginatedFetch } from "@/hooks/useHttpRequest";
 import { Spinner } from "@radix-ui/themes";
 import { toast } from "react-toastify";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Page = () => {
   let itemsPerPage = 20;
@@ -29,15 +30,13 @@ const Page = () => {
       totalItemsKey: "totalUsers", // If the total items key is `totalUsers`
       currentPageKey: "currentPage", // If current page is under `current`
     },
-    (data: any) => console.log("Fetch success", data),
+    undefined,
     () => toast.error("Failed to fetch admins"),
   );
 
   useEffect(() => {
-    
     refetch;
   }, [currentPage]);
-
 
   const pageCount = Math.ceil(data?.totalItems / itemsPerPage);
   return (
@@ -70,14 +69,17 @@ const Page = () => {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center">
-          <Spinner size="2" />
+        <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
         </div>
       ) : (
         <RolesTable
-          data={data}
+          data={data?.data}
           refetch={refetch}
-          pageCount={pageCount}
+          pageCount={data?.totalPages}
           setCurrentPage={setCurrentPage}
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}

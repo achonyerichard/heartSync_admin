@@ -28,13 +28,10 @@ import { useAuth } from "@/context/AuthContext";
 import { AdminRole } from "@/lib/Constants";
 const SideMenu = () => {
   const { userRole } = useAuth();
-  console.log("role", userRole);
   const router = useRouter();
   const path = usePathname();
   const { open, setOpen } = useUtilAuth();
-  const [width, setWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 500,
-  );
+ 
 
   const menu = [
     {
@@ -93,24 +90,8 @@ const SideMenu = () => {
     },
   ];
 
-  useEffect(() => {
-    // Function to update width state when the window resizes
-    const handleResize = () => {
-      setWidth(window.innerWidth);
-    };
 
-    // Add event listener for window resize
-    window.addEventListener("resize", handleResize);
 
-    // Cleanup function to remove event listener when component unmounts
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  const index = menu.findIndex(
-    (rte) => rte.route.toLowerCase() === path.split("/")[1].split("?")[0],
-  );
 
   return (
     <>
@@ -182,18 +163,10 @@ const SideMenu = () => {
               MANAGE
             </h6>
             <div className="relative overflow-hidden">
-              <div
-                className={`transition3 absolute left-0 right-0 z-10 h-[40px] rounded-md bg-white shadow-lg xl:h-[53px] xl:rounded-[10px] ${path.includes("/settings") ? "hidden" : ""}`}
-                style={{
-                  transform:
-                    width > 1024
-                      ? `translateY(${index * (53 + 4)}px)`
-                      : `translateY(${index * (40 + 4)}px)`,
-                }}
-              />
+             
               {menu.map((menuitem, index) => (
               menuitem.roles?.includes(userRole)&& <Link
-                  className={`transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 xl:rounded-[10px] xl:px-4 xl:py-3 ${path.includes(menuitem.route.toLowerCase()) ? "" : "hover:bg-primary"}`}
+                  className={`transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 xl:rounded-[10px] xl:px-4 xl:py-3 ${path.includes(menuitem.route.toLowerCase()) ? "bg-white" : "hover:bg-primary"}`}
                   key={index}
                   href={`/${menuitem.route.toLowerCase()}`}
                   onClick={() => setOpen(false)}

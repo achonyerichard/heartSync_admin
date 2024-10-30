@@ -13,6 +13,7 @@ import ProductTable from "@/components/tables/ProductTable";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Item = ({
   item,
@@ -22,7 +23,6 @@ const Item = ({
   onClick: (prop: any) => void;
 }) => {
   const router = useRouter();
-  console.log(item);
   return (
     <CustomCard className="transition3 cursor-pointer">
       <div className="mb-2 items-center gap-x-4 xl:mb-4 xl:flex">
@@ -71,12 +71,11 @@ const Item = ({
 };
 
 const Page = () => {
-  let itemsPerPage = 30;
+  let itemsPerPage = 20;
   const router = useRouter();
   const role = getCookie("heartsyncRole");
-  const typeRef = useRef<"add" | "update">("add");
+  const typeRef = useRef<string>("");
   const [open, setOpen] = useState(false);
-  const [itemOffset, setItemOffset] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
 
   const { isLoading, data, refetch } = usePaginatedFetch(
@@ -90,93 +89,12 @@ const Page = () => {
       totalItemsKey: "totalUsers", // If the total items key is `totalUsers`
       currentPageKey: "currentPage", // If current page is under `current`
     },
-    (data: any) => console.log("Fetch success", data),
+    undefined,
     () => toast.error("Failed to fetch admins"),
   );
-  const items = [
-    {
-      title: "Adidas Ultra boost",
-      category: "Sneakers",
-      price: "200",
-      description: "Long distance running requires a lot from athletes.",
-      qty: 1260,
-      total: 4000,
-      image: market_image,
-    },
-    {
-      title: "Adidas Ultra boost",
-      category: "Sneakers",
-      price: "200",
-      description: "Long distance running requires a lot from athletes.",
-      qty: 1260,
-      total: 4000,
-      image: market_image,
-    },
-    {
-      title: "Adidas Ultra boost",
-      category: "Sneakers",
-      price: "200",
-      description: "Long distance running requires a lot from athletes.",
-      qty: 1260,
-      total: 4000,
-      image: market_image,
-    },
-    {
-      title: "Adidas Ultra boost",
-      category: "Sneakers",
-      price: "200",
-      description: "Long distance running requires a lot from athletes.",
-      qty: 1260,
-      total: 4000,
-      image: market_image,
-    },
-    {
-      title: "Adidas Ultra boost",
-      category: "Sneakers",
-      price: "200",
-      description: "Long distance running requires a lot from athletes.",
-      qty: 1260,
-      total: 4000,
-      image: market_image,
-    },
-    {
-      title: "Adidas Ultra boost",
-      category: "Sneakers",
-      price: "200",
-      description: "Long distance running requires a lot from athletes.",
-      qty: 1260,
-      total: 4000,
-      image: market_image,
-    },
-    {
-      title: "Adidas Ultra boost",
-      category: "Sneakers",
-      price: "200",
-      description: "Long distance running requires a lot from athletes.",
-      qty: 1260,
-      total: 4000,
-      image: market_image,
-    },
-    {
-      title: "Adidas Ultra boost",
-      category: "Sneakers",
-      price: "200",
-      description: "Long distance running requires a lot from athletes.",
-      qty: 1260,
-      total: 4000,
-      image: market_image,
-    },
-  ];
-  //https://heart-sync-backend.onrender.com/v1/api/
-  const endOffset = itemOffset + itemsPerPage;
-  const currentItems = items.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(items.length / itemsPerPage);
-  const handlePageClick = (event: { selected: any }) => {
-    const newOffset = (event.selected * itemsPerPage) % items.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`,
-    );
-    setItemOffset(newOffset);
+
+  const handlePageClick = (event: { selected: number }) => {
+    setCurrentPage(event.selected); // React Paginate provides 0-based page index
   };
 
   const { mutate, isLoading: isDeleteLoading } = useMutate(
@@ -191,7 +109,9 @@ const Page = () => {
       toast.error("Something went wrong");
     },
   );
-  console.log(data);
+  useEffect(() => {
+    refetch;
+  }, [currentPage]);
   return (
     <>
       {" "}
@@ -215,7 +135,7 @@ const Page = () => {
         <Button
           variant="default"
           onClick={() => {
-            console.log("hello");
+           
             router.push("/marketplace/create-product");
           }}
           className=""
@@ -224,50 +144,74 @@ const Page = () => {
         </Button>
       </div>
       {role === "super_admin" && (
-        <ProductTable
-          data={data?.data}
-          refetch={refetch}
-          pageCount={pageCount}
-          setCurrentPage={setCurrentPage}
-          itemsPerPage={itemsPerPage}
-          currentPage={currentPage}
-        />
+        <>
+          {isLoading ? (
+           <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
+           <Skeleton className="h-10 w-full" />
+           <Skeleton className="h-10 w-full" />
+           <Skeleton className="h-10 w-full" />
+           <Skeleton className="h-10 w-full" />
+         </div>
+          ) : (
+            <ProductTable
+              data={data?.data}
+              refetch={refetch}
+              pageCount={data?.totalPages}
+              setCurrentPage={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+            />
+          )}
+        </>
       )}
       {role === "marketer" && (
-        <div className="">
-          <div className="grid grid-cols-1 gap-2 xl:grid-cols-3 xl:gap-3">
-            {data?.data.map((item: any) => (
-              <Item
-                item={item}
-                key={item._id}
-                onClick={(prop) => {
-                  //setUpdateItem(prop);
-                  setOpen(true);
-                  typeRef.current = item.productId;
-                }}
+        <>
+          {" "}
+          {isLoading ? (
+            <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : (
+            <div className="">
+              <div className="grid grid-cols-1 gap-2 xl:grid-cols-3 xl:gap-3">
+                {data?.data.map((item: any) => (
+                  <div key={item._id}>
+                    <Item
+                      item={item}
+                      onClick={(prop) => {
+                        //setUpdateItem(prop);
+                        setOpen(true);
+                        typeRef.current = item.productId;
+                      }}
+                    />{" "}
+                  </div>
+                ))}
+              </div>{" "}
+              <ReactPaginate
+                breakLabel="....."
+                nextLabel="Next >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={1}
+                pageCount={data?.totalPages}
+                previousLabel="< Previous"
+                renderOnZeroPageCount={null}
+                containerClassName="pagination"
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="previous-item"
+                previousLinkClassName="previous-link"
+                nextClassName="next-item"
+                nextLinkClassName="next-link"
+                breakClassName="break-item"
+                breakLinkClassName="break-link"
+                activeClassName="active"
               />
-            ))}
-          </div>{" "}
-          <ReactPaginate
-            breakLabel="....."
-            nextLabel="Next >"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={1}
-            pageCount={pageCount}
-            previousLabel="< Previous"
-            renderOnZeroPageCount={null}
-            containerClassName="pagination"
-            pageClassName="page-item"
-            pageLinkClassName="page-link"
-            previousClassName="previous-item"
-            previousLinkClassName="previous-link"
-            nextClassName="next-item"
-            nextLinkClassName="next-link"
-            breakClassName="break-item"
-            breakLinkClassName="break-link"
-            activeClassName="active"
-          />
-        </div>
+            </div>
+          )}
+        </>
       )}
       <Modal open={open} setOpen={() => setOpen(false)}>
         <DeleteModal
