@@ -24,8 +24,8 @@ export function middleware(request: NextRequest) {
       ],
       redirect: "/marketplace",
     },
-    moderator: { routes: ["", ""], redirect: "" },
-    admin: { routes: ["", ""], redirect: "" },
+    moderator: { routes: ["overview"], redirect: "overview" },
+    admin: { routes: ["overview"], redirect: "overview" },
     super_admin: {
       routes: [
         "/store",

@@ -1,6 +1,8 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import CustomTitle from "@/components/atoms/CustomTitle/CustomTitle";
 import { CustomCard } from "@/components/atoms/CustomCard/CustomCard";
+import { useFetch } from "@/hooks/useHttpRequest";
 
 const OrderCard = ({
   title,
@@ -8,14 +10,14 @@ const OrderCard = ({
   day,
 }: {
   title: string;
-  amount: string;
+  amount: number;
   day: string;
 }) => {
   return (
     <CustomCard className="mb-3.5">
-      <p className="mb-2 text-sm font-medium text-[#8A8686]">{title}</p>
+      <p className="mb-2 text-sm font-medium text-[#8A8686] capitalize">{title}</p>
       <div className="flex items-center justify-between">
-        <div className="flex gap-x-4 items-center">
+        <div className="flex items-center gap-x-4">
           <div className="rounded-lg bg-[#F75555] p-2.5">
             <svg
               width="20"
@@ -52,6 +54,15 @@ const OrderCard = ({
 };
 
 const OrderAnalysis = () => {
+  const [data, setData] = useState<{ count: number; status: string }[]>([]);
+
+  const { } = useFetch(
+    "fetch-orders-count",
+    "orders/getOrderStatusCount",
+    (data) => {
+      setData(data.data.data);
+    },
+  );
   return (
     <div className="col-span-2">
       {" "}
@@ -61,7 +72,8 @@ const OrderAnalysis = () => {
           height="30"
           viewBox="0 0 28 30"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"className="h-6 w-6 xl:h-8 xl:w-8"
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6 xl:h-8 xl:w-8"
         >
           <path
             d="M26.2 6.83015L15.2 0.8089C14.8324 0.60658 14.4196 0.500488 14 0.500488C13.5804 0.500488 13.1676 0.60658 12.8 0.8089L1.8 6.83015C1.4064 7.04551 1.078 7.36283 0.849271 7.74881C0.620538 8.1348 0.499896 8.57523 0.5 9.0239V20.9764C0.499896 21.4251 0.620538 21.8655 0.849271 22.2515C1.078 22.6375 1.4064 22.9548 1.8 23.1701L12.8 29.1914C13.1675 29.3939 13.5804 29.5002 14 29.5002C14.4196 29.5002 14.8325 29.3939 15.2 29.1914L26.2 23.1701C26.5936 22.9548 26.922 22.6375 27.1507 22.2515C27.3795 21.8655 27.5001 21.4251 27.5 20.9764V9.0239C27.5001 8.57523 27.3795 8.1348 27.1507 7.74881C26.922 7.36283 26.5936 7.04551 26.2 6.83015ZM14 3.5714L23 8.50015L20.3213 9.9664L11.3212 5.0389L14 3.5714ZM14 13.4251L5 8.50015L8.195 6.75015L17.195 11.6764L14 13.4251ZM3.5 11.0989L12.5 16.0239V25.6076L3.5 20.6801V11.0989ZM15.5 25.6076V16.0239L18.5 14.3826V18.0001C18.5 18.398 18.658 18.7795 18.9393 19.0608C19.2206 19.3421 19.6022 19.5001 20 19.5001C20.3978 19.5001 20.7794 19.3421 21.0607 19.0608C21.342 18.7795 21.5 18.398 21.5 18.0001V12.7401L24.5 11.0989V20.6801L15.5 25.6076Z"
@@ -69,9 +81,12 @@ const OrderAnalysis = () => {
           />
         </svg>
       </CustomTitle>
-      <OrderCard title="Total Orders" amount="200" day="Today" />
-      <OrderCard title="Active Orders" amount="200" day="Today" />
-      <OrderCard title="Shipped Orders" amount="200" day="Today" />
+      {data.map((order, index) => (
+        <div key={index}>
+          {" "}
+          <OrderCard title={`${order.status} Orders`} amount={order.count} day="" />
+        </div>
+      ))}
     </div>
   );
 };

@@ -405,7 +405,7 @@ const CreateProduct = () => {
             type="submit"
             className="max-xl:w-1/2 xl:min-w-[100px]"
           >
-            add
+           {productId?'Edit':' Add'}
           </Button>{" "}
           <Button
             variant={"outline"}

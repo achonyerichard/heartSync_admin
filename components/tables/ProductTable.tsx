@@ -1,34 +1,17 @@
 "use client";
-import { Membership, Users } from "@/interfaces";
-import Link from "next/link";
 import React, { useRef, useState } from "react";
 import ReactPaginate from "react-paginate";
 import Modal from "../molecules/Modals/ModalBackground";
 import DeleteModal from "../molecules/Modals/DeleteModal/DeleteModal";
-import { Edit2Icon } from "lucide-react";
-export const items: Users[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    createdAt: "28-03-2004",
-    email: "",
-    role: "Marketer",
-  },
-  {
-    id: "2",
-    email: "",
-    name: "John Doe",
-    createdAt: "28-03-2004",
-    role: "Admin",
-  },
-];
+import { Switch } from "../ui/switch";
+import { useMutate } from "@/hooks/useHttpRequest";
+import { toast } from "react-toastify";
+
+
 const ProductTable = ({
   data,
-  refetch,
   pageCount,
   setCurrentPage,
-  itemsPerPage,
-  currentPage,
 }: {
   data: any;
   refetch: any;
@@ -40,23 +23,23 @@ const ProductTable = ({
   const [open, setOpen] = useState(false);
   const typeRef = useRef<"delete" | "update">("delete");
 
-  const [itemOffset, setItemOffset] = useState(0);
-
-  // Simulate fetching items from another resources.
-  // (This could be items from props; or items loaded in a local state
-  // from an API endpoint with useEffect and useState)
-  const endOffset = itemOffset + itemsPerPage;
-  console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-  const currentItems = items.slice(itemOffset, endOffset);
-
   // Invoke when user click to request another page.
-  const handlePageClick = (event: { selected: any }) => {
-    const newOffset = (event.selected * itemsPerPage) % items.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`,
-    );
-    setItemOffset(newOffset);
+  const handlePageClick = (event: { selected: number }) => {
+    setCurrentPage(event.selected); // React Paginate provides 0-based page index
   };
+
+  const { mutate: approve } = useMutate(
+    "patch",
+    "products/approveProduct",
+    () => {
+      toast.success("Product has been approved");
+    },
+    undefined,
+    () => {
+      toast.error("Could not approve product");
+    },
+  );
+
   return (
     <div>
       <div className="h-auto w-full overflow-auto bg-white shadow-xl">
@@ -69,7 +52,6 @@ const ProductTable = ({
               <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
                 Title
               </th>{" "}
-         
               <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
                 Price
               </th>
@@ -90,7 +72,6 @@ const ProductTable = ({
                   <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
                     {item?.name}
                   </td>{" "}
-              
                   <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
                     {item?.price}
                   </td>
@@ -119,17 +100,16 @@ const ProductTable = ({
                           fill-opacity="0.8"
                         />
                       </svg>
-                    </button>
-                    <button
-                      value={"delete"}
-                      onClick={() => {
-                        setOpen(true);
-                        typeRef.current = "delete";
+                    </button> 
+                    <Switch
+                      onCheckedChange={() => {
+                        approve({
+                          productId: item?.productId,
+                          isApproved: !item?.isApproved,
+                        });
                       }}
-                      className={`whitespace-no-wrap text-md text-Hwhite cursor-pointer rounded-md p-2 font-semibold`}
-                    >
-                      <Edit2Icon size={15} color="green" />
-                    </button>
+                      defaultChecked={item?.isApproved}
+                    />
                   </td>
                 </tr>
               ))}
