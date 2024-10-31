@@ -21,9 +21,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-
 // import required modules
-import { Autoplay} from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 
 const Item = ({
   item,
@@ -45,21 +44,21 @@ const Item = ({
           }}
           modules={[Autoplay]}
           className="mySwiper w-4/12 grow-0"
-        > {item.imagesUrl.map((image: string, index: number) => (
-          <SwiperSlide>
-           
+        >
+          {" "}
+          {item.imagesUrl.map((image: string, index: number) => (
+            <SwiperSlide key={index}>
               <Image
-                key={index}
                 src={image}
                 className="shrink-none h-auto w-full rounded-md object-cover max-xl:mb-2 max-xl:aspect-square xl:h-20 xl:w-20 xl:rounded-lg"
                 alt=""
                 height={500}
                 width={500}
               />
-          
-          </SwiperSlide>  ))}
+            </SwiperSlide>
+          ))}
         </Swiper>
-        <div className="grow w-8/12 shrink-0">
+        <div className="w-8/12 shrink-0 grow">
           <p className="text-sm font-semibold xl:text-base">{item.name}</p>
           <p className="mb-1 text-sm font-semibold text-lightgray xl:mb-2">
             {item.category}
@@ -84,7 +83,7 @@ const Item = ({
           variant="outline"
           onClick={() => {
             router.push(
-              `/marketplace/create-product?id=${item.productId}&name=${item.name}&description=${item.description}&price=${item.price}&stock=${item.stock}&imagesUrl=${item.imagesUrl.join("!")}`,
+              `/marketplace/create-product?id=${item.productId}&name=${item.name}&description=${item.description}&price=${item.price}&stock=${item.stock}&imagesUrl=${item.imagesUrl.join("!")}&category=${item.category.map((itm: string) => itm.replace(" ", "-")).join("!")}&size=${item.size.join("!")}&color=${item.color.join("!")}&productMaterial=${item.productMaterial}`,
             );
           }}
           className="px-6"
@@ -205,8 +204,7 @@ const Page = () => {
                   <div key={item._id}>
                     <Item
                       item={item}
-                      onClick={(prop) => {
-                        //setUpdateItem(prop);
+                      onClick={() => {
                         setOpen(true);
                         typeRef.current = item.productId;
                       }}
