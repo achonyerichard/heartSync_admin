@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import React, { ChangeEvent, SyntheticEvent, useState } from "react";
 import CustomTitle from "@/components/atoms/CustomTitle/CustomTitle";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useFetch, useFormDataMutate, useMutate } from "@/hooks/useHttpRequest";
 import Select from "react-select";
 import {
@@ -19,29 +19,21 @@ import {
 import { colors } from "@/data/colors";
 import { toast } from "react-toastify";
 
-const CreateProductForm = ({
-  productName,
-  productCategory,
-  productColor,
-  productDescription,
-  productId,
-  productImages,
-  productStock,
-  productPrice,
-  productMaterial,
-  productSize,
-}: {
-  productName: string | null;
-  productCategory: string[] | undefined;
-  productColor: string[] | undefined;
-  productDescription: string | null;
-  productId: string | null;
-  productImages: string[] | undefined;
-  productStock: string | null;
-  productPrice: string | null;
-  productMaterial: string | null;
-  productSize: string[] | undefined;
-}) => {
+const CreateProductForm = () => {
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("id");
+  const productName = searchParams.get("name");
+  const productDescription = searchParams.get("description");
+  const productPrice = searchParams.get("price");
+  const productStock = searchParams.get("stock");
+  const productImages = searchParams.get("imagesUrl")?.split("!");
+  const productCategory = searchParams
+    .get("category")
+    ?.split("!")
+    .map((cat) => cat.replace("-", " ").replace("%27", "'"));
+  const productSize = searchParams.get("size")?.split("!");
+  const productColor = searchParams.get("color")?.split("!");
+  const productMaterial = searchParams.get("productMaterial");
   const colorArray = Object.keys(colors).map((color) => ({
     label: color,
     value: color,
