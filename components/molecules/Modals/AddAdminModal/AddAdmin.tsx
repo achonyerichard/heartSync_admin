@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Users } from "@/interfaces";
 import { AdminRole } from "@/lib/Constants";
-import { toast } from "react-toastify";
+import { Flip, toast } from "react-toastify";
 
 const AddModal = ({
   type,
@@ -45,11 +45,34 @@ const AddModal = ({
     "post",
     "admins/create",
     (data) => {
-      toast.success("Admin created successfully");
+      toast.success(data?.data.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Flip,
+      });
       refetch();
+      closeModal()
     },
     undefined,
-    () => {},
+    (err:any) => {
+        toast.error(err.response.data.message, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Flip,
+        });
+    },
   );
 
   const { data: stores } = useFetch("stores", "stores/getStores");
