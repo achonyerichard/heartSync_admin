@@ -76,7 +76,7 @@ const ProductTable = ({
                     {item?.price}
                   </td>
                   <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {`$ ${item?.stock}`}
+                    {item?.stock}
                   </td>
                   <td className="flex items-center px-5 py-3 text-sm">
                     <button
