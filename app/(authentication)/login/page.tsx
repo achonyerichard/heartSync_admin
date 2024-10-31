@@ -15,7 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const Page = () => {
   const router = useRouter();
-    const { setUserRole } = useAuth();
+  const { setUserRole } = useAuth();
   const [login, setLogin] = useState({ email: "", password: "" });
   const [passwordtoggle, setPasswordToggle] = useState(true);
   const [error, setError] = useState({
@@ -37,20 +37,19 @@ const Page = () => {
   const { mutate, isLoading } = useMutate(
     "post",
     "auth/adminLogin",
-    (data) => {toast.success(data?.data.message)
+    (data) => {
+      toast.success(data?.data.message);
       setCookie("isLoggedIn", true, { maxAge: 31536000 });
       setCookie("heartsyncRole", data?.data?.data?.role, { maxAge: 31536000 });
       setCookie("token", data?.data.data.accessToken, { maxAge: 31536000 });
       localStorage.setItem("heartsync_user", JSON.stringify(data?.data.data));
       setUserRole(data?.data?.data?.role);
       setHttpHeaders(data?.data.data.accessToken);
-     router.push("/overview");
-     
+      router.push("/overview");
     },
     undefined,
-    (err:any) => {
-      
-     toast.error(err.response.data.message)
+    (err: any) => {
+      toast.error(err.response.data.message);
     },
   );
 
@@ -58,11 +57,11 @@ const Page = () => {
     e.preventDefault();
     if (!emailRegex.test(login.email.trim())) {
       handleErrorChange("email", true, "Please enter a valid email");
-    } else if (login.password.trim().length < 7) {
+    } else if (login.password.trim().length < 6) {
       handleErrorChange(
         "password",
         true,
-        "Password must be atleast seven characters",
+        "Password must be atleast six characters",
       );
     } else {
       mutate(login);
@@ -84,7 +83,7 @@ const Page = () => {
 
       <form onSubmit={submitHandler} className="w-full lg:w-10/12">
         <Input
-          className={`transition3 border-gray mb-7 h-14 bg-gray ${error.email.error ? "border-primary text-primary" : ""}`}
+          className={`transition3 mb-7 h-14 border-gray bg-gray ${error.email.error ? "border-primary text-primary" : ""}`}
           placeholder="Email address"
           name="email"
           onChange={handleInputChange}
@@ -93,7 +92,7 @@ const Page = () => {
         />{" "}
         <div className="relative mb-14 w-full">
           <Input
-            className={`transition3 border-gray h-14 bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
+            className={`transition3 h-14 border-gray bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
             placeholder="Password"
             name="password"
             type={passwordtoggle ? "password" : "text"}
@@ -134,6 +133,7 @@ const Page = () => {
           variant="default"
           className="h-14 w-full active:bg-primary"
           type="submit"
+          disabled={isLoading}
         >
           {isLoading ? <Spinner size="2" loading={true} /> : <>Log In</>}
         </Button>

@@ -12,7 +12,7 @@ import DeleteModal from "@/components/molecules/Modals/DeleteModal/DeleteModal";
 import ProductTable from "@/components/tables/ProductTable";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { Flip, toast } from "react-toastify";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -23,6 +23,11 @@ import "swiper/css/navigation";
 
 // import required modules
 import { Autoplay } from "swiper/modules";
+import { AdminRole } from "@/lib/Constants";
+import { useAuth } from "@/context/AuthContext";
+import EmptyState from "@/components/organisms/EmptyState/EmptyState";
+import { Eye, PencilLine, Trash2 } from "lucide-react";
+import ProductModal from "@/components/molecules/Modals/ProductModal/ProductModal";
 
 const Item = ({
   item,
@@ -32,8 +37,11 @@ const Item = ({
   onClick: (prop: any) => void;
 }) => {
   const router = useRouter();
+  const [openView, setOpenView] = useState(false);
+  const typeRef = useRef<"disapprove" | "approve" | "view">("approve");
+  const itemRef = useRef<any>({});
   return (
-    <CustomCard className="transition3 cursor-pointer">
+    <CustomCard className="transition3 cursor-pointer bg-lightpink">
       <div className="mb-2 items-center gap-x-4 xl:mb-4 xl:flex">
         <Swiper
           spaceBetween={30}
@@ -43,7 +51,7 @@ const Item = ({
             disableOnInteraction: false,
           }}
           modules={[Autoplay]}
-          className="mySwiper w-4/12 grow-0"
+          className="mySwiper w-4/12 grow-0 bg-lightpink"
         >
           {" "}
           {item.imagesUrl.map((image: string, index: number) => (
@@ -59,16 +67,31 @@ const Item = ({
           ))}
         </Swiper>
         <div className="w-8/12 shrink-0 grow">
-          <p className="text-sm font-semibold xl:text-base">{item.name}</p>
-          <p className="mb-1 text-sm font-semibold text-lightgray xl:mb-2">
-            {item.category}
-          </p>{" "}
+          <p className="text-sm font-semibold capitalize xl:text-base">
+            {item.name}
+          </p>
+          {
+            <p className="mb-1 text-sm font-semibold text-lightgray xl:mb-2">
+              {item.category}
+            </p>
+          }{" "}
           <div className="flex justify-between">
             <p className="text-sm font-semibold xl:text-base">${item.price}</p>
             <p className="font-semibold text-lightgray">{item.stock} left</p>
           </div>
         </div>
       </div>
+      <div className="flex items-center gap-2 mb-4">
+        <span
+          className={`h-2 w-2 rounded-full ${item?.isApproved ? "bg-green-500" : "bg-red-500"}`}
+        ></span>
+        <p
+          className={`text-sm ${item?.isApproved ? "text-green-500" : "text-red-500"}`}
+        >
+          {item?.isApproved ? "Approved" : "Not Approved"}{" "}
+        </p>
+      </div>
+
       <div className="mb-4">
         <p className="hidden text-base font-semibold xl:block">Description</p>
         <p className="hidden text-sm font-semibold text-lightgray xl:block">
@@ -76,31 +99,54 @@ const Item = ({
         </p>
       </div>
       <div className="flex justify-end space-x-2">
-        <Button variant="default" onClick={onClick} className="px-6">
-          Delete
+        <Button
+          variant="default"
+          onClick={onClick}
+          className="shdaow-xl hover:bg-gray-200 h-7 w-7 rounded-full bg-white p-2 hover:bg-red-100"
+        >
+          <Trash2 color="red" size={12} />
         </Button>{" "}
         <Button
-          variant="outline"
+          variant="default"
+          className="shdaow-xl hover:bg-gray-200 h-7 w-7 rounded-full bg-white p-2 hover:bg-green-100"
           onClick={() => {
             router.push(
               `/marketplace/create-product?id=${item.productId}&name=${item.name}&description=${item.description}&price=${item.price}&stock=${item.stock}&imagesUrl=${item.imagesUrl.join("!")}&category=${item.category.map((itm: string) => itm.replace(" ", "-")).join("!")}&size=${item.size.join("!")}&color=${item.color.join("!")}&productMaterial=${item.productMaterial}`,
             );
           }}
-          className="px-6"
         >
-          Edit
+          <PencilLine size={12} color="green" />
+        </Button>
+        <Button
+          variant="default"
+          className="shdaow-xl hover:bg-gray-200 h-7 w-7 rounded-full bg-white p-2 hover:bg-green-100"
+          onClick={() => {
+            setOpenView(true);
+            itemRef.current = item;
+            typeRef.current = "view";
+          }}
+        >
+          <Eye size={20} color="black" />
         </Button>
       </div>
+      <Modal open={openView} setOpen={() => setOpenView(false)}>
+        <ProductModal
+          item={itemRef?.current}
+          type={typeRef.current}
+          skip={false}
+        />
+      </Modal>
     </CustomCard>
   );
 };
 
 const Page = () => {
   let itemsPerPage = 20;
-  const router = useRouter();
-  const role = getCookie("heartsyncRole");
-  const typeRef = useRef<string>("");
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const router = useRouter();
+  const { userRole } = useAuth();
+  const typeRef = useRef<string>("");
   const [currentPage, setCurrentPage] = useState(0);
 
   const { isLoading, data, refetch } = usePaginatedFetch(
@@ -121,7 +167,41 @@ const Page = () => {
   const handlePageClick = (event: { selected: number }) => {
     setCurrentPage(event.selected); // React Paginate provides 0-based page index
   };
-
+  const { mutate: approve, isLoading: isAdding } = useMutate(
+    "patch",
+    "products/approveProduct",
+    (data) => {
+      toast.success(data?.data.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Flip,
+      });
+      setTimeout(() => {
+        setOpen(false);
+        refetch();
+      }, 1000);
+    },
+    undefined,
+    (err: any) => {
+      toast.error(err.response.data.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Flip,
+      });
+    },
+  );
   const { mutate, isLoading: isDeleteLoading } = useMutate(
     "delete",
     `products/deleteProduct/${typeRef.current}`,
@@ -155,19 +235,21 @@ const Page = () => {
               fill="#F75555"
             />
           </svg>
-          <span className="text-base font-bold xl:text-[20px]">Gifts</span>
+          <span className="text-base font-bold xl:text-[20px]">Product</span>
         </div>
-        <Button
-          variant="default"
-          onClick={() => {
-            router.push("/marketplace/create-product");
-          }}
-          className=""
-        >
-          Add New Gifts
-        </Button>
+        {userRole === AdminRole.MARKETER && (
+          <Button
+            variant="default"
+            onClick={() => {
+              router.push("/marketplace/create-product");
+            }}
+            className=""
+          >
+            Add New Product
+          </Button>
+        )}
       </div>
-      {role === "super_admin" && (
+      {userRole === AdminRole.SUPER_ADMIN && (
         <>
           {isLoading ? (
             <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
@@ -179,16 +261,19 @@ const Page = () => {
           ) : (
             <ProductTable
               data={data?.data}
-              refetch={refetch}
               pageCount={data?.totalPages}
               setCurrentPage={setCurrentPage}
               itemsPerPage={itemsPerPage}
               currentPage={currentPage}
+              approve={approve}
+              isLoading={isAdding}
+              open={open2}
+              setOpen={setOpen2}
             />
           )}
         </>
       )}
-      {role === "marketer" && (
+      {userRole === AdminRole.MARKETER && (
         <>
           {isLoading ? (
             <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
@@ -199,19 +284,23 @@ const Page = () => {
             </div>
           ) : (
             <div className="">
-              <div className="grid grid-cols-1 gap-2 xl:grid-cols-3 xl:gap-3">
-                {data?.data.map((item: any) => (
-                  <div key={item._id}>
-                    <Item
-                      item={item}
-                      onClick={() => {
-                        setOpen(true);
-                        typeRef.current = item.productId;
-                      }}
-                    />{" "}
-                  </div>
-                ))}
-              </div>{" "}
+              {data?.data?.length > 0 ? (
+                <div className="grid grid-cols-1 gap-2 xl:grid-cols-3 xl:gap-3">
+                  {data?.data.map((item: any) => (
+                    <div key={item._id}>
+                      <Item
+                        item={item}
+                        onClick={() => {
+                          setOpen(true);
+                          typeRef.current = item.productId;
+                        }}
+                      />{" "}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState text={"Products"} />
+              )}{" "}
               <ReactPaginate
                 breakLabel="....."
                 nextLabel="Next >"

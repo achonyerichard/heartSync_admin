@@ -151,7 +151,7 @@ const CategoryTable = ({
               type={typeRef.current}
               close={() => setOpen(false)}
               handleDelete={() => mutate({})}
-              text="Do you to permanently delete this Membership type? "
+              text="Do you to permanently delete this Staff ? "
             />
           </Modal>
         </>
