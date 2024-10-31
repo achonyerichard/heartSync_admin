@@ -33,7 +33,13 @@ const CreateProduct = () => {
   const productPrice = searchParams.get("price");
   const productStock = searchParams.get("stock");
   const productImages = searchParams.get("imagesUrl")?.split("!");
-
+  const productCategory = searchParams
+    .get("category")
+    ?.split("!")
+    .map((cat) => cat.replace("-", " ").replace("%27", "'"));
+  const productSize = searchParams.get("size")?.split("!");
+  const productColor = searchParams.get("color")?.split("!");
+  const productMaterial = searchParams.get("productMaterial");
   const [details, setDetails] = useState<{
     name: string;
     description: string;
@@ -50,10 +56,10 @@ const CreateProduct = () => {
     stock: productStock ? Number(productStock) : 0,
     price: productPrice ? Number(productPrice) : 0,
     image: [],
-    category: [],
-    color: [],
-    productMaterial: "",
-    size: [],
+    category: productCategory ? productCategory : [],
+    color: productColor ? productColor : [],
+    productMaterial: productMaterial ? productMaterial : "",
+    size: productSize ? productSize : [],
   });
   const [preview, setPreview] = useState<string[]>(
     productImages ? productImages : [],
@@ -202,7 +208,7 @@ const CreateProduct = () => {
             <div className="mb-6">
               <Label>Gift Color</Label>
               <Select
-                placeholder="Select Cleaners"
+                placeholder="Select Color"
                 classNames={{
                   control: () =>
                     "border border-gray-300 rounded-2xl dark:bg-black text-white",
@@ -405,7 +411,7 @@ const CreateProduct = () => {
             type="submit"
             className="max-xl:w-1/2 xl:min-w-[100px]"
           >
-           {productId?'Edit':' Add'}
+            {productId ? "Edit" : " Add"}
           </Button>{" "}
           <Button
             variant={"outline"}

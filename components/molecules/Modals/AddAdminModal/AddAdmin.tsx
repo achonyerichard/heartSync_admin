@@ -26,11 +26,14 @@ const AddModal = ({
   setOpen: () => void;
   refetch: () => void;
 }) => {
+  interface NewRole extends Users {
+    recipientEmail: string;
+  }
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Users>();
+  } = useForm<NewRole>();
   const [store, setStore] = useState("");
   const [role, setRole] = useState("");
   const [passwordtoggle, setPasswordToggle] = useState(true);
@@ -54,16 +57,14 @@ const AddModal = ({
     if (role === "marketer") {
       mutate({
         ...data,
-        recipientEmail: data.email,
-        email: `user${Math.floor(100000 + Math.random() * 900000)}@heartsync.com`,
+
         role,
         store,
       });
     } else {
       mutate({
         ...data,
-        recipientEmail: data.email,
-        email: `user${Math.floor(100000 + Math.random() * 900000)}@heartsync.com`,
+
         role,
       });
     }
@@ -109,17 +110,40 @@ const AddModal = ({
           </div>
           <div className="w-full">
             <div className="mb-3">
-              <label className="text-xs font-bold text-black"> Email:</label>
+              <label className="text-xs font-bold text-black">
+                Recipient Email:
+              </label>
+              <Input
+                className={`transition3 h-14 border-gray bg-gray`}
+                placeholder="Enter a recipient email"
+                {...register("recipientEmail", {
+                  required: "Email is required",
+                })}
+              />
+              {errors?.recipientEmail && (
+                <span className="duration-1500 text-xs text-red-500 transition-all ease-out">
+                  {errors?.recipientEmail.message}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="w-full">
+            <div className="mb-3">
+              <label className="text-xs font-bold text-black">Email:</label>
               <Input
                 className={`transition3 h-14 border-gray bg-gray`}
                 placeholder="Enter an email"
                 {...register("email", {
                   required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@heartsync\.com$/,
+                    message: "Email must end with @heartsync.com",
+                  },
                 })}
               />
-              {errors?.name && (
+              {errors?.email && (
                 <span className="duration-1500 text-xs text-red-500 transition-all ease-out">
-                  {errors?.name.message}
+                  {errors?.email.message}
                 </span>
               )}
             </div>

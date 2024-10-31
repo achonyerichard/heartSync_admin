@@ -83,7 +83,7 @@ const CategoryTable = ({
                       {item?.role}
                     </td>
                     <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                      {`$ ${item?.createdAt.split("T")[0]}`}
+                      {item?.createdAt.split("T")[0]}
                     </td>
 
                     <td className="flex items-center px-5 py-3 text-sm">
