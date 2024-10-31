@@ -31,7 +31,6 @@ const SideMenu = () => {
   const router = useRouter();
   const path = usePathname();
   const { open, setOpen } = useUtilAuth();
- 
 
   const menu = [
     {
@@ -89,9 +88,6 @@ const SideMenu = () => {
       roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
     },
   ];
-
-
-
 
   return (
     <>
@@ -163,30 +159,32 @@ const SideMenu = () => {
               MANAGE
             </h6>
             <div className="relative overflow-hidden">
-             
-              {menu.map((menuitem, index) => (
-              menuitem.roles?.includes(userRole)&& <Link
-                  className={`transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 xl:rounded-[10px] xl:px-4 xl:py-3 ${path.includes(menuitem.route.toLowerCase()) ? "bg-white" : "hover:bg-primary"}`}
-                  key={index}
-                  href={`/${menuitem.route.toLowerCase()}`}
-                  onClick={() => setOpen(false)}
-                >
-                  <Image
-                    src={
-                      path.includes(menuitem.route.toLowerCase())
-                        ? menuitem.active
-                        : menuitem.inactive
-                    }
-                    alt={`${menuitem.route} icon`}
-                    className="h-6 w-6 xl:h-auto xl:w-auto"
-                  />
-                  <span
-                    className={`transition2 text-nowrap text-sm xl:text-base ${path.includes(menuitem.route.toLowerCase()) ? "text-primary group-hover:text-primary" : "text-white"} ${open ? "visible w-[100%]" : "invisible w-[0%] overflow-hidden"}`}
-                  >
-                    {menuitem.route}
-                  </span>
-                </Link>
-              ))}
+              {menu.map(
+                (menuitem, index) =>
+                  menuitem.roles?.includes(userRole) && (
+                    <Link
+                      className={`transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 xl:rounded-[10px] xl:px-4 xl:py-3 ${path.includes(menuitem.route.toLowerCase()) ? "bg-white" : "hover:bg-primary"}`}
+                      key={index}
+                      href={`/${menuitem.route.toLowerCase()}`}
+                      onClick={() => setOpen(false)}
+                    >
+                      <Image
+                        src={
+                          path.includes(menuitem.route.toLowerCase())
+                            ? menuitem.active
+                            : menuitem.inactive
+                        }
+                        alt={`${menuitem.route} icon`}
+                        className="h-6 w-6 xl:h-auto xl:w-auto"
+                      />
+                      <span
+                        className={`transition2 text-nowrap text-sm xl:text-base ${path.includes(menuitem.route.toLowerCase()) ? "text-primary group-hover:text-primary" : "text-white"} ${open ? "visible w-[100%]" : "invisible w-[0%] overflow-hidden"}`}
+                      >
+                        {menuitem.route}
+                      </span>
+                    </Link>
+                  ),
+              )}
             </div>
           </div>
           <div>
