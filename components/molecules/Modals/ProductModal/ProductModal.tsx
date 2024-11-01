@@ -18,7 +18,6 @@ const ProductModal = ({
   item: any;
   skip: boolean;
 }) => {
-  console.log(item);
   return (
     <div className="h--auto relative max-h-[95vh] overflow-y-auto rounded-xl bg-white p-6 lg:w-2/5">
       {" "}
@@ -90,7 +89,7 @@ const ProductModal = ({
         </span>
         {skip && (
           <ul>
-            {item?.category.map((category: any) => (
+            {item?.category?.map((category: any) => (
               <li key={category} className="flex items-center gap-2">
                 <span>
                   <List color="green" size={16} />
