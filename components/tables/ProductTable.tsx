@@ -135,7 +135,7 @@ const ProductTable = ({
               type={typeRef.current}
               close={() => setOpen(false)}
               handleApprove={() => {
-                if ((typeRef.current = "approve")) {
+                if (itemRef.current?.isApproved) {
                   approve({
                     productId: itemRef?.current?.productId,
                     isApproved: false,

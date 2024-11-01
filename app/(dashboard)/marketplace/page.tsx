@@ -54,7 +54,7 @@ const Item = ({
           className="mySwiper w-4/12 grow-0 bg-lightpink"
         >
           {" "}
-          {item.imagesUrl.map((image: string, index: number) => (
+          {item?.imagesUrl?.map((image: string, index: number) => (
             <SwiperSlide key={index}>
               <Image
                 src={image}
@@ -70,18 +70,18 @@ const Item = ({
           <p className="text-sm font-semibold capitalize xl:text-base">
             {item.name}
           </p>
-          {
+          <span className="flex">
             <p className="mb-1 text-sm font-semibold text-lightgray xl:mb-2">
-              {item.category}
+              {item?.category}
             </p>
-          }{" "}
+          </span>
           <div className="flex justify-between">
             <p className="text-sm font-semibold xl:text-base">${item.price}</p>
             <p className="font-semibold text-lightgray">{item.stock} left</p>
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-2 mb-4">
+      <div className="mb-4 flex items-center gap-2">
         <span
           className={`h-2 w-2 rounded-full ${item?.isApproved ? "bg-green-500" : "bg-red-500"}`}
         ></span>
@@ -133,7 +133,7 @@ const Item = ({
         <ProductModal
           item={itemRef?.current}
           type={typeRef.current}
-          skip={false}
+          skip={true}
         />
       </Modal>
     </CustomCard>
@@ -183,7 +183,7 @@ const Page = () => {
         transition: Flip,
       });
       setTimeout(() => {
-        setOpen(false);
+        setOpen2(false);
         refetch();
       }, 1000);
     },
