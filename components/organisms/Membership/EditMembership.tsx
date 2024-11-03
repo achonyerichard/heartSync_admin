@@ -1,6 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useMutate } from "@/hooks/useHttpRequest";
+import { Spinner } from "@radix-ui/themes";
 import {
   Edit,
   Edit3Icon,
@@ -9,8 +11,21 @@ import {
   SaveIcon,
   Trash2,
 } from "lucide-react";
-import React, { SyntheticEvent, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import React, { SyntheticEvent, useEffect, useState } from "react";
+import { HexColorPicker } from "react-colorful";
+import { Flip, toast } from "react-toastify";
+type ItemType = {
+  // Define the structure of your item here, for example:
+  _id: string;
+  name: string;
+  cost:any;
+  benefits:string[];
+  color:string;
+  timeline:string
 
+  // Add other properties as needed
+};
 const data = {
   id: 1,
   title: "Basic Plan",
@@ -19,11 +34,33 @@ const data = {
   benefits: ["Access to basic features", "Email support", "Community access"],
 };
 const EditMembershipForm = () => {
-  const [title, setTitle] = useState<string>(data.title);
-  const [price, setPrice] = useState<number>(data.price);
-  const [color, setColor] = useState<string>(data.color);
-  const [benefits, setBenefits] = useState<string[]>(data.benefits); // Start with an empty benefit
-
+  const [item, setItem] = useState<ItemType>({
+    name: "",
+    cost:'',
+    benefits:[],
+    _id:"",
+    color:"",
+    timeline:""
+  });
+ useEffect(() => {
+   if (typeof window !== "undefined") {
+     const storedItem = localStorage.getItem("singlePlan");
+     if (storedItem) {
+       try {
+         setItem(JSON.parse(storedItem));
+       } catch (error) {
+         console.error("Failed to parse item from localStorage:", error);
+       }
+     }
+   }
+ }, []);
+  const router = useRouter();
+  const params = useParams()
+  const [title, setTitle] = useState<string| any>(item?.name);
+  const [price, setPrice] = useState<number | null| undefined>(item?.cost);
+  const [color, setColor] = useState<string | any>(item?.color);
+  const [benefits, setBenefits] = useState<string[]>(item?.benefits); // Start with an empty benefit
+ const [newBenefit, setNewBenefit] = useState<string>("");
   // State to manage the edit mode for each field
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
   const [isEditingPrice, setIsEditingPrice] = useState<boolean>(false);
@@ -51,18 +88,29 @@ const EditMembershipForm = () => {
     setBenefits(updatedBenefits);
   };
 
-  // Handle adding a new benefit
-  const handleAddBenefit = () => {
-    setBenefits([...benefits, ""]); // Add a new empty benefit
-    setIsEditingBenefits([...isEditingBenefits, true]); // Make the new benefit editable
-  };
-
+ const handleAddBenefit = (e: SyntheticEvent) => {
+   e.preventDefault();
+   if (newBenefit.trim() !== "") {
+     // Only add if newBenefit is not empty
+     setBenefits((prevBenefits) => [...item?.benefits, newBenefit]); // Spread old benefits and add the new one
+     setIsEditingBenefits((prevEditing) => [...prevEditing, true]); // Make the new benefit editable
+     setNewBenefit(""); // Clear the input field
+   } else {
+       setBenefits((prevBenefits) => [...item?.benefits]);
+   }
+ };
   // Handle deleting a specific benefit
   const handleDeleteBenefit = (index: number) => {
-    const updatedBenefits = benefits.filter((_, i) => i !== index);
-    const updatedEditing = isEditingBenefits.filter((_, i) => i !== index);
-    setBenefits(updatedBenefits);
-    setIsEditingBenefits(updatedEditing);
+     if (!benefits[index]) {
+       console.warn("Benefit does not exist at the specified index.");
+       return;
+     }
+
+     const updatedBenefits = benefits.filter((_, i) => i !== index);
+     const updatedEditing = isEditingBenefits.filter((_, i) => i !== index);
+
+     setBenefits([...updatedBenefits]);
+     setIsEditingBenefits([...updatedEditing]);
   };
 
   // Toggle editing state for a benefit
@@ -71,15 +119,50 @@ const EditMembershipForm = () => {
     updatedEditing[index] = !updatedEditing[index];
     setIsEditingBenefits(updatedEditing);
   };
-
+ const { mutate, isLoading } = useMutate(
+   "patch",
+   `admins/updateAdmin/${params?.id}`,
+   (data) => {
+     toast.success(data?.data.message, {
+       position: "top-center",
+       autoClose: 5000,
+       hideProgressBar: true,
+       closeOnClick: true,
+       pauseOnHover: true,
+       draggable: true,
+       progress: undefined,
+       theme: "colored",
+       transition: Flip,
+     });
+     setTimeout(() => {
+       router.push("/membership");
+     }, 1500);
+   },
+   undefined,
+   (err: any) => {
+     toast.error(err.response.data.message, {
+       position: "top-center",
+       autoClose: 5000,
+       hideProgressBar: true,
+       closeOnClick: true,
+       pauseOnHover: true,
+       draggable: true,
+       progress: undefined,
+       theme: "colored",
+       transition: Flip,
+     });
+   },
+ );
   const handleSave = (e: SyntheticEvent) => {
     e.preventDefault();
+   
     const savedData = {
       title,
       price,
       color,
       benefits,
     };
+      mutate(savedData);
     console.log("Saved Data:", savedData);
   };
 
@@ -88,10 +171,10 @@ const EditMembershipForm = () => {
       <form className="p-4">
         <div className="mb-7 flex items-center gap-2">
           <Input
-            className={`transition3 border-gray h-14 bg-gray disabled:border-gray disabled:bg-white disabled:font-semibold disabled:text-black ${false ? "border-primary text-primary" : ""}`}
+            className={`transition3 h-14 border-gray bg-gray disabled:border-gray disabled:bg-white disabled:font-semibold disabled:text-black ${false ? "border-primary text-primary" : ""}`}
             placeholder="Title"
-            name="tiitle"
-            value={title}
+            name="title"
+            defaultValue={item?.name}
             disabled={!isEditingTitle} // Toggle editability
             onChange={handleTitleChange}
             //   onChange={handleInputChange}
@@ -109,14 +192,14 @@ const EditMembershipForm = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-1">
           <div className="mb-7 flex items-center gap-2">
             <Input
-              className={`transition3 border-gray h-14 bg-gray disabled:border-gray disabled:bg-white disabled:font-semibold disabled:text-black ${false ? "border-primary text-primary" : ""}`}
+              className={`transition3 h-14 border-gray bg-gray disabled:border-gray disabled:bg-white disabled:font-semibold disabled:text-black ${false ? "border-primary text-primary" : ""}`}
               placeholder="Price"
               name="price"
               type="number"
-              value={`${price}`}
+              defaultValue={`${item?.cost}`}
               disabled={!isEditingPrice} // Toggle editability
               onChange={handlePriceChange}
               //   onChange={handleInputChange}
@@ -137,19 +220,9 @@ const EditMembershipForm = () => {
               )}
             </button>
           </div>
-          <div className="mb-7 flex items-center gap-2">
-            <Input
-              className={`transition3 border-gray h-14 bg-gray disabled:border-gray disabled:bg-white disabled:font-semibold disabled:text-black ${false ? "border-primary text-primary" : ""}`}
-              placeholder="Insert a Hex Code"
-              name="color"
-              type="text"
-              value={color}
-              disabled={!isEditingColor} // Toggle editability
-              onChange={handleColorChange}
-              //   onChange={handleInputChange}
-              //   onFocus={(e) => handleErrorChange(e.target.name, false, "")}
-              //   message={error.email.message}
-            />
+          <div className="mb-7 flex items-center justify-center gap-2">
+            <HexColorPicker color={item?.color} onChange={setColor} />
+
             <button
               className="text-green-500"
               onClick={(e) => {
@@ -169,26 +242,22 @@ const EditMembershipForm = () => {
           <p>Benefits</p>
         </span>
         <ul className="mt-4 flex flex-col space-y-2">
-          {benefits.map((benefit, index) => (
+          {item?.benefits.map((benefit, index) => (
             <li key={index} className="mb-2 flex items-center gap-2">
               <Input
-                className={`transition3 border-gray h-14 bg-gray disabled:border-gray disabled:bg-white disabled:font-semibold disabled:text-black ${false ? "border-primary text-primary" : ""}`}
-                placeholder="Add a benefit "
-                name="color"
+                className="transition3 h-14 border-gray bg-gray"
+                placeholder="Add a benefit"
                 type="text"
-                value={benefit}
+                defaultValue={benefit}
                 disabled={!isEditingBenefits[index]} // Toggle editability
-                onChange={(e) => handleBenefitChange(index, e.target.value)}
-                //   onChange={handleInputChange}
-                //   onFocus={(e) => handleErrorChange(e.target.name, false, "")}
-                //   message={error.email.message}
+                onChange={(e) => handleBenefitChange(index, e.target.value)} // Update benefit value
               />
               <button
                 className="text-green-500"
                 onClick={(e) => {
                   e.preventDefault();
-                  toggleEditingBenefit(index);
-                }} // Toggle edit mode for the benefit
+                  toggleEditingBenefit(index); // Toggle edit mode for the benefit
+                }}
               >
                 {isEditingBenefits[index] ? (
                   <SaveIcon size={15} />
@@ -196,28 +265,39 @@ const EditMembershipForm = () => {
                   <Edit3Icon size={15} />
                 )}
               </button>
-              <button
-                onClick={() => handleDeleteBenefit(index)} // Delete the benefit
-              >
+              <button onClick={() => handleDeleteBenefit(index)}>
                 <Trash2 size={15} color="red" />
               </button>
             </li>
           ))}
+          <li className="mb-2 flex items-center gap-2">
+            <Input
+              className="transition3 h-14 border-gray bg-gray"
+              placeholder="Enter new benefit"
+              type="text"
+              defaultValue={newBenefit}
+              onChange={(e) => setNewBenefit(e.target.value)} // Update the temporary state
+            />
+            <Button onClick={handleAddBenefit} className="text-white">
+              Add
+            </Button>
+          </li>
         </ul>
-        <Button
-          onClick={handleAddBenefit}
-          className="mt-2 flex h-10 w-auto items-center gap-2 rounded-[10px] bg-secondary px-3 text-white"
-        >
-          <PlusIcon size={15} />
-          Add Benefit
-        </Button>
+     
         <span className="flex justify-end">
           <Button
             onClick={handleSave}
             className="mt-2 flex h-10 w-40 items-center justify-center gap-2 rounded-[10px] bg-green-500 px-3 text-white"
           >
-            <SaveIcon size={15} />
-            Save
+            {isLoading ? (
+              <Spinner size="2" loading={true} />
+            ) : (
+              <>
+                {" "}
+                <SaveIcon size={20} />
+                Save
+              </>
+            )}
           </Button>
         </span>
       </form>

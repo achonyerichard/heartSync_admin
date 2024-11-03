@@ -6,6 +6,8 @@ import Link from "next/link";
 import React, { useMemo, useState } from "react";
 import ReactPaginate from "react-paginate";
 import EmptyState from "../EmptyState/EmptyState";
+import { format } from "date-fns";
+import profile from "@/public/images/icons/user_profile.svg";
 export const items: Reports[] = [
   {
     id: 1,
@@ -114,25 +116,33 @@ const ReportCards = ({
                 id?: any;
                 reason?: any;
                 createdAt?: any;
-                status?: any;
-                reporter?: any;
+                resolved?: any;
+                reporterIdProfile?: any;
                 reported?: any;
               }) => {
-                const { reporter, reported } = item;
+                const { reporterIdProfile, reported } = item;
+              
                 return (
-                  <Link href={`reports/${item?._id}`} key={item.id}>
+                  <Link
+                    href={`reports/${item?._id}`}
+                    key={item.id}
+                  >
                     <CustomCard className="transition3 flex cursor-pointer items-start justify-between border border-gray hover:scale-[1.01]">
                       <div className="mb-2 flex flex-col items-start gap-y-2 xl:mb-4">
                         <div className="flex items-center gap-x-2">
                           <Image
-                            src={reporter?.profilePicture}
+                            src={
+                              reporterIdProfile?.profilePicture === ""
+                                ? profile
+                                : reporterIdProfile?.profilePicture
+                            }
                             width={200}
                             height={200}
-                            className="shrink-none h-auto w-20 rounded-full max-xl:mb-2 max-xl:object-cover xl:h-12 xl:w-12 xl:rounded-full"
+                            className="shrink-none h-auto w-10 rounded-full max-xl:mb-2 max-xl:object-cover xl:h-10 xl:w-10 xl:rounded-full"
                             alt=""
                           />
                           <p className="text-sm font-semibold xl:text-base">
-                            From: {reporter?.nickname}
+                            From: {reporterIdProfile?.nickname}
                           </p>
                         </div>
 
@@ -144,14 +154,14 @@ const ReportCards = ({
                       </div>
                       <div className="flex flex-col items-start gap-y-2">
                         <p className="text-sm font-semibold text-lightgray">
-                          {item?.createdAt}
+                          {format(item?.createdAt, "yyyy-MM-dd")}
                         </p>
                         <div className="flex items-center gap-2">
                           <span
-                            className={`h-2 w-2 rounded-full ${item?.status === "Resolved" ? "bg-green-500" : "bg-primary"}`}
+                            className={`h-2 w-2 rounded-full ${item?.resolved ? "bg-green-500" : "bg-primary"}`}
                           ></span>
                           <p className="text-sm font-semibold text-black xl:text-base">
-                            {item?.status}
+                            {item?.resolved ? "Resolved" : "Pending"}
                           </p>
                         </div>
                       </div>

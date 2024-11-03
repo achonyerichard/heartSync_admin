@@ -12,7 +12,7 @@ import {
 import React, { useRef, useState } from "react";
 import { Calendar, DownloadIcon, ShoppingBagIcon } from "lucide-react";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import Modal from "@/components/molecules/Modals/ModalBackground";
 
@@ -22,8 +22,9 @@ import { CustomCard } from "@/components/atoms/CustomCard/CustomCard";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useFetch } from "@/hooks/useHttpRequest";
 
-const data = {
+const datax = {
   sender: {
     name: "Charlotte Adams",
     email: " janecooper@gmail.com",
@@ -53,6 +54,14 @@ const data = {
 };
 const SingleReport = () => {
   const router = useRouter();
+  const params = useParams();
+  const { data, isLoading, refetch } = useFetch(
+    "get",
+    `reports/getAReport/${params?.id}`,
+    (data) => {},
+    undefined,
+  );
+  console.log(data);
   const [value, setValue] = useState<string>("");
   const [open, setOpen] = useState(false);
   const typeRef = useRef<"update" | "delete">("delete");
@@ -96,7 +105,7 @@ const SingleReport = () => {
         <div className="flex items-center gap-x-4">
           <span className="flex items-center gap-x-2 [&>*:nth-child(even)]:font-bold">
             <Calendar size={20} />
-            <p>{data.item.date}</p>
+            <p>{datax.item.date}</p>
           </span>
         </div>
         <Button
@@ -104,14 +113,14 @@ const SingleReport = () => {
           className="flex h-10 w-auto items-center gap-2 rounded-none border-none bg-green-500 text-white"
           disabled
         >
-          {data.item.status}
+          {datax.item.status}
         </Button>
       </div>
       <div className="grid gap-4 lg:grid-cols-1">
         <CustomCard className="transition3 flex justify-between border border-gray hover:scale-[1.01]">
           <div className="mb-2 items-start gap-x-4 xl:mb-4 xl:flex">
             <Image
-              src={data.sender.img}
+              src={datax.sender.img}
               width={200}
               height={200}
               className="shrink-none h-auto w-20 rounded-full max-xl:mb-2 max-xl:object-cover xl:h-12 xl:w-12 xl:rounded-full"
@@ -119,13 +128,13 @@ const SingleReport = () => {
             />
             <div className="flex flex-col gap-y-2">
               <p className="text-sm font-semibold xl:text-base">
-                From: {data.sender.name}
+                From: {datax.sender.name}
               </p>
               <p className="text-sm font-semibold text-lightgray">
-                Email: {data.sender.email}
+                Email: {datax.sender.email}
               </p>
               <p className="text-sm font-semibold text-lightgray xl:text-base">
-                Phone: {data.sender.phone}
+                Phone: {datax.sender.phone}
               </p>
             </div>
           </div>
@@ -139,7 +148,7 @@ const SingleReport = () => {
         <CustomCard className="transition3 flex justify-between border border-gray hover:scale-[1.01]">
           <div className="mb-2 items-start gap-x-4 xl:mb-4 xl:flex">
             <Image
-              src={data.recepient.img}
+              src={datax.recepient.img}
               width={200}
               height={200}
               className="shrink-none h-auto w-20 rounded-full max-xl:mb-2 max-xl:object-cover xl:h-12 xl:w-12 xl:rounded-full"
@@ -147,13 +156,13 @@ const SingleReport = () => {
             />
             <div className="flex flex-col gap-y-2">
               <p className="text-sm font-semibold xl:text-base">
-                From: {data.recepient.name}
+                From: {datax.recepient.name}
               </p>
               <p className="text-sm font-semibold text-lightgray">
-                Email: {data.recepient.email}
+                Email: {datax.recepient.email}
               </p>
               <p className="text-sm font-semibold text-lightgray xl:text-base">
-                Phone: {data.recepient.phone}
+                Phone: {datax.recepient.phone}
               </p>
             </div>
           </div>
@@ -168,19 +177,19 @@ const SingleReport = () => {
           <div className="mb-2 flex w-full items-center justify-between gap-x-4 border-b border-lightgray pb-2 xl:mb-4">
             <p className="text-sm font-semibold xl:text-base">Report Reason</p>
             <p className="text-sm font-semibold text-lightgray">
-              {data.item.reason}
+              {datax.item.reason}
             </p>
           </div>
           <Textarea
-            className={`transition3 border-gray mb-7 h-14 bg-gray ${false ? "border-primary text-primary" : ""}`}
+            className={`transition3 mb-7 h-14 border-gray bg-gray ${false ? "border-primary text-primary" : ""}`}
             placeholder="Type your message here."
           />
           <div className="flex justify-end">
             <Button
               variant="outline"
-              className="flex h-10 w-auto items-center gap-2 border-green-500 bg-green-500 text-white rounded-sm"
+              className="flex h-10 w-auto items-center gap-2 rounded-sm border-green-500 bg-green-500 text-white"
               onClick={(e) => {
-                e.preventDefault()
+                e.preventDefault();
                 setOpen(true);
                 typeRef.current = "update";
               }}
@@ -192,7 +201,7 @@ const SingleReport = () => {
         </CustomCard>
       </div>
 
-      <Modal open={open} setOpen={()=>setOpen(false)}>
+      <Modal open={open} setOpen={() => setOpen(false)}>
         <ConfirmModal
           type={typeRef.current}
           close={() => setOpen(false)}
