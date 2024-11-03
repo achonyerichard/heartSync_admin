@@ -19,7 +19,6 @@ const UsersTables = ({
   itemsPerPage: any;
   currentPage:any;
 }) => {
-  console.log(data);
   const users = useMemo(() => {
     if (!data?.data) {
       return;

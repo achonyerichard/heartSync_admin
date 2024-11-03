@@ -70,15 +70,22 @@ const Item = ({
           <p className="text-sm font-semibold capitalize xl:text-base">
             {item.name}
           </p>
-          <span className="flex">
-            <p className="mb-1 text-sm font-semibold text-lightgray xl:mb-2">
-              {item?.category}
-            </p>
-          </span>
+
           <div className="flex justify-between">
             <p className="text-sm font-semibold xl:text-base">${item.price}</p>
             <p className="font-semibold text-lightgray">{item.stock} left</p>
           </div>
+          <span className="flex w-full gap-2">
+            {item?.category?.slice(0, 2)?.map((cat: string, index: string) => (
+              <p
+                className="mb-1 text-sm font-semibold text-lightgray xl:mb-2 border-lightgray pr-1 border-r-2"
+                key={index}
+              >
+                {cat}
+              </p>
+            ))}
+                        
+          </span>
         </div>
       </div>
       <div className="mb-4 flex items-center gap-2">

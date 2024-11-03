@@ -148,8 +148,8 @@ const EditMembershipForm = () => {
                   </SelectTrigger>
 
                   <SelectContent className="border-none bg-gray">
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="week">Weekly</SelectItem>
+                    <SelectItem value="month">Monthly</SelectItem>
                   </SelectContent>
                 </Select>
               )}

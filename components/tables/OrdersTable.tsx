@@ -1,75 +1,33 @@
 "use client";
 import { Orders } from "@/interfaces";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import ReactPaginate from "react-paginate";
-export const items: Orders[] = [
-  {
-    id:1,
-    sentBy: "John Doe",
-    product: "Laptop",
-    orderId: "ORD123456",
-    date: "2024-09-28",
-    status: "Shipped",
-    amount: 1200.5,
-  },
-  {
-    id:2,
-    sentBy: "Jane Smith",
-    product: "Smartphone",
-    orderId: "ORD123457",
-    date: "2024-09-29",
-    status: "Processing",
-    amount: 799.99,
-  },
-  {
-    id:3,
-    sentBy: "Michael Brown",
-    product: "Headphones",
-    orderId: "ORD123458",
-    date: "2024-09-30",
-    status: "Delivered",
-    amount: 199.99,
-  },
-  {
-    id:4,
-    sentBy: "Emily Davis",
-    product: "Tablet",
-    orderId: "ORD123459",
-    date: "2024-10-01",
-    status: "Cancelled",
-    amount: 499.0,
-  },
-  {
-    id:5,
-    sentBy: "William Johnson",
-    product: "Gaming Console",
-    orderId: "ORD123460",
-    date: "2024-10-02",
-    status: "Shipped",
-    amount: 599.99,
-  },
-];
 
-const OrdersTable = () => {
-  let itemsPerPage = 4;
-  const [itemOffset, setItemOffset] = useState(0);
+const OrdersTable = ({
+  data,
+  refetch,
+  pageCount,
+  setCurrentPage,
+  itemsPerPage,
+  currentPage,
+}: {
+  data: any;
+  refetch: any;
+  pageCount: any;
+  setCurrentPage: any;
+  itemsPerPage: any;
+  currentPage: any;
+}) => {
+  const orders = useMemo(() => {
+    if (!data?.data) {
+      return;
+    }
+    return data?.data;
+  }, [data?.data]);
 
-  // Simulate fetching items from another resources.
-  // (This could be items from props; or items loaded in a local state
-  // from an API endpoint with useEffect and useState)
-  const endOffset = itemOffset + itemsPerPage;
-  console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-  const currentItems = items.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(items.length / itemsPerPage);
-
-  // Invoke when user click to request another page.
-  const handlePageClick = (event: { selected: any }) => {
-    const newOffset = (event.selected * itemsPerPage) % items.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`,
-    );
-    setItemOffset(newOffset);
+  const handlePageClick = (event: { selected: number }) => {
+    setCurrentPage(event.selected); // React Paginate provides 0-based page index
   };
   return (
     <div>
@@ -91,7 +49,7 @@ const OrdersTable = () => {
                 Order Id
               </th>
               <th className="b px-5 py-3 text-center text-sm font-semibold capitalize tracking-wider text-black">
-                Date of Birth
+                Recipient
               </th>
               <th className="b px-5 py-3 text-center text-sm font-semibold capitalize tracking-wider text-black">
                 Status
@@ -105,40 +63,110 @@ const OrdersTable = () => {
             </tr>
           </thead>
 
-          {currentItems && (
+          {data && (
             <tbody className="w-full text-black shadow-lg [&>*:nth-child(even)]:bg-white [&>*:nth-child(odd)]:bg-lightpink">
-              {currentItems?.map((item, index) => (
-                <tr key={item?.id} className="">
-                  <td className="px-5 py-3 text-sm">{index + 1}</td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item?.sentBy}
-                  </td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item?.product}
-                  </td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item?.orderId}
-                  </td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item?.date}
-                  </td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item?.status}
-                  </td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item?.amount}
-                  </td>
+              {orders?.map(
+                (
+                  item: {
+                    id: React.Key | null | undefined;
+                    senderProfile: {
+                      nickname:
+                        | string
+                        | number
+                        | bigint
+                        | boolean
+                        | React.ReactElement<
+                            any,
+                            string | React.JSXElementConstructor<any>
+                          >
+                        | Iterable<React.ReactNode>
+                        | React.ReactPortal
+                        | Promise<React.AwaitedReactNode>
+                        | null
+                        | undefined;
+                    };
+                    items: { product: { price: any; name: string } }[];
+                    orderCustomId:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    sentToProfile: {
+                      nickname:
+                        | string
+                        | number
+                        | bigint
+                        | boolean
+                        | React.ReactElement<
+                            any,
+                            string | React.JSXElementConstructor<any>
+                          >
+                        | Iterable<React.ReactNode>
+                        | React.ReactPortal
+                        | Promise<React.AwaitedReactNode>
+                        | null
+                        | undefined;
+                    };
+                    status:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                  },
+                  index: number,
+                ) => {
+                  return (
+                    <tr key={item?.id} className="">
+                      <td className="px-5 py-3 text-sm">{index + 1}</td>
+                      <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                        {item?.senderProfile?.nickname}
+                      </td>
+                      <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                        {item?.items[0]?.product?.name ?? "N/A"}
+                      </td>
+                      <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                        {item?.orderCustomId}
+                      </td>
+                      <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                        {item?.sentToProfile?.nickname}
+                      </td>
+                      <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                        {item?.status}
+                      </td>
+                      <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                        {item?.items[0]?.product?.price ?? "N/A"}
+                      </td>
 
-                  <td className="flex items-center px-5 py-3 text-sm">
-                    <Link
-                      href={`/orders/${item.id}`}
-                      className={`whitespace-no-wrap text-md text-Hwhite ml-3 cursor-pointer rounded-md p-2 font-semibold underline`}
-                    >
-                      View
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+                      <td className="flex items-center px-5 py-3 text-sm">
+                        <Link
+                          href={`/orders/${item.id}`}
+                          className={`whitespace-no-wrap text-md text-Hwhite ml-3 cursor-pointer rounded-md p-2 font-semibold underline`}
+                        >
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                },
+              )}
             </tbody>
           )}
         </table>
