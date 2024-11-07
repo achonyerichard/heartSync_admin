@@ -31,9 +31,9 @@ const UsersTables = ({
     setCurrentPage(event.selected); // React Paginate provides 0-based page index
   };
   return (
-    <div>
+    <div className="">
       <div className="h-auto w-full overflow-auto bg-white shadow-xl">
-        <table className="no-scrollbar w-full overflow-scroll leading-normal lg:overflow-hidden">
+        <table className="no-scrollbar w-full overflow-x-scroll leading-normal lg:overflow-hidden">
           <thead>
             <tr className="border-gray-400 border-b bg-white">
               <th className="b px-5 py-3 text-center text-sm font-semibold capitalize tracking-wider text-black">
