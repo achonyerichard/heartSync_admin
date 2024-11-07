@@ -9,19 +9,13 @@ export function middleware(request: NextRequest) {
   const loggedIn = request.cookies.has("token");
   const role = request.cookies.get("heartsyncRole")!;
 
-
   const auth = ["/login"];
 
   const ROUTE_PROTECTOR: {
     [key: string]: { routes: string[]; redirect: string };
   } = {
     marketer: {
-      routes: [
-        "/store",
-        "/marketplace",
-        "/orders",
-        "/marketplace/create-product",
-      ],
+      routes: ["/marketplace", "/orders", "/marketplace/create-product"],
       redirect: "/marketplace",
     },
     moderator: { routes: ["overview"], redirect: "overview" },

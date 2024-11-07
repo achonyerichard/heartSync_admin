@@ -61,7 +61,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${urbanist.variable} mx-auto max-w-[1728px]`}>
+      <body className={`${urbanist.variable} overflow-hidden`}>
         <Wrapper>{children}</Wrapper>
       </body>
     </html>

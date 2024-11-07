@@ -4,11 +4,13 @@ import React from "react";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex font-urbanist  ">
+    <div className="flex font-urbanist">
       <SideMenu />
-      <section className="lg:grow w-full">
+      <section className="w-full lg:grow">
         <NavBar />
-        <div className="px-5 xl:px-9 py-3 xl:py-6 ">{children}</div>
+        <div className="mx-auto max-w-[1728px] overflow-hidden px-5 py-3 xl:px-9 xl:py-6">
+          {children}
+        </div>
       </section>
     </div>
   );

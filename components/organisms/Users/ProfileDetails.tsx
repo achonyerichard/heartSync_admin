@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ProfileDetail } from "@/interfaces";
+import { format } from "date-fns";
 import { Facebook, StarIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 export const data: ProfileDetail = {
   name: "Andrew James",
@@ -9,7 +12,7 @@ export const data: ProfileDetail = {
   socialBar: "Elite",
   socialsUrl: [
     {
-      name: "Facebook",
+      name: "facebook",
       url: (
         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <title>Facebook</title>
@@ -18,7 +21,7 @@ export const data: ProfileDetail = {
       ),
     },
     {
-      name: "Instagram",
+      name: "instagram",
       url: (
         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <title>Instagram</title>
@@ -27,7 +30,7 @@ export const data: ProfileDetail = {
       ),
     },
     {
-      name: "Tik Tok",
+      name: "tiktok",
       url: (
         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <title>TikTok</title>
@@ -36,7 +39,7 @@ export const data: ProfileDetail = {
       ),
     },
     {
-      name: "X",
+      name: "x",
       url: (
         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <title>X</title>
@@ -45,7 +48,7 @@ export const data: ProfileDetail = {
       ),
     },
     {
-      name: "LinkedIn",
+      name: "linkedIn",
       url: (
         <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <title>LinkedIn</title>
@@ -57,13 +60,15 @@ export const data: ProfileDetail = {
   subscriptionPlan: "Premium",
   lastSeen: "2 hrs ago",
 };
-const ProfileDetails = () => {
+const ProfileDetails = ({ about }: any) => {
+  const router = useRouter();
+
   return (
     <>
       <div className="flex flex-col space-y-4 bg-white p-4 shadow-lg">
         <div className="flex items-center justify-center">
           <Image
-            src={data.profileUrl}
+            src={about?.imagesUrl[0]}
             alt="User Profile"
             className="h-24 w-24 rounded-full object-cover dark:invert"
             width={100}
@@ -73,7 +78,7 @@ const ProfileDetails = () => {
         </div>
         <div className="flex flex-col items-start justify-between lg:flex-row">
           <div className="flex flex-col space-y-4">
-            <p className="text-lg font-bold text-black">{data.name}</p>
+            <p className="text-lg font-bold text-black">{about?.nickname}</p>
             <Button
               className="flex h-7 w-auto items-center bg-primary text-sm"
               type="submit"
@@ -82,18 +87,29 @@ const ProfileDetails = () => {
             </Button>
           </div>
           <div className="flex flex-col space-y-4">
-            <p className="text-textgray text-sm">{data.lastSeen}</p>
-            <span className="flex items-center gap-2">
+            <p className="text-sm text-textgray">
+              {about?.createdAt
+                ? format(about?.createdAt, "MMMM dd, yyyy")
+                : "N/A"}
+            </p>
+            {/* <span className="flex items-center gap-2">
               <StarIcon size={12} color="gold" fill="gold" />
-              <p className="text-textgray text-sm">{data.socialBar}</p>
-            </span>
+              <p className="text-sm text-textgray">{data.socialBar}</p>
+            </span> */}
           </div>
         </div>
         <div className="flex items-center justify-around">
           {data.socialsUrl.map((item) => (
             <span
+              onClick={() => {
+                router.push(
+                  about?.socialMediaLinks
+                    ? about?.socialMediaLinks[item?.name]
+                    : "",
+                );
+              }}
               key={item.name}
-              className="h-8 w-8 rounded-full p-2 shadow-lg"
+              className="h-8 w-8 cursor-pointer rounded-full p-2 shadow-lg"
             >
               {item.url}
             </span>
@@ -101,12 +117,7 @@ const ProfileDetails = () => {
         </div>
         <div>
           <h2 className="pb-2 text-base font-semibold text-black">About</h2>
-          <p className="text-textgray text-sm">
-            I am an adventurous soul who loves exploring new places, trying
-            exotic cuisines, and meeting interesting people. My passion for
-            travel is matched only by my love for photography. Lets embark on an
-            exciting journey together!
-          </p>
+          <p className="text-sm text-textgray">{about?.aboutMe}</p>
         </div>
       </div>
     </>

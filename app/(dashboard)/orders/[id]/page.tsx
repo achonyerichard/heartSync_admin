@@ -9,10 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Calendar, DownloadIcon, ShoppingBagIcon } from "lucide-react";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import Modal from "@/components/molecules/Modals/ModalBackground";
 
@@ -20,6 +20,11 @@ import ConfirmModal from "@/components/molecules/Modals/DeleteModal/Confirmation
 import Image from "next/image";
 import { CustomCard } from "@/components/atoms/CustomCard/CustomCard";
 import Link from "next/link";
+import { useFetch, useMutate } from "@/hooks/useHttpRequest";
+import { OrderStatus } from "@/lib/Constants";
+import { Flip, toast } from "react-toastify";
+import { format } from "date-fns";
+import HeartBeatLoader from "@/components/organisms/Loader/HeartBeatLoader";
 
 const data = {
   sender: {
@@ -46,14 +51,69 @@ const data = {
     paymentMehod: "Card",
     paymentChannel: "PayPal",
   },
-  order:[
-    {product:"Bouquet of Flowers (Lilac)",quantity:2, amount:1000,id:1}
-  ]
+  order: [
+    { product: "Bouquet of Flowers (Lilac)", quantity: 2, amount: 1000, id: 1 },
+  ],
 };
 const SingleOrder = () => {
   const router = useRouter();
+  const params = useParams();
   const [value, setValue] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const {
+    data: orderItem,
+    isLoading,
+    refetch,
+  } = useFetch(
+    "get",
+    `orderItems/getOrderItem/${params?.id}`,
+    (data) => {},
+    undefined,
+  );
+  const { mutate, isLoading: editLoading } = useMutate(
+    "patch",
+    `/orderItems/updateOrderItem/${params?.id}`,
+    (data) => {
+      toast.success(data?.data.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Flip,
+      });
+      setTimeout(() => {
+        setOpen(false);
+        refetch();
+      }, 1000);
+    },
+    undefined,
+    (err: any) => {
+      setValue("");
+      toast.error(err.response.data.message, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Flip,
+      });
+    },
+  );
+  const orders = useMemo(() => {
+    if (!orderItem?.data) {
+      return;
+    }
+    return orderItem?.data?.data;
+  }, [orderItem?.data]);
+  console.log(orders);
+
   const typeRef = useRef<"delete" | "update">("delete");
   return (
     <section className="pb-20">
@@ -91,40 +151,51 @@ const SingleOrder = () => {
           </div>
         </div>
       </div>
-      <div className="mb-4 flex flex-col items-center justify-between lg:flex-row">
-        <div className="flex items-center gap-x-4">
-          <span className="flex items-center gap-x-1 [&>*:nth-child(even)]:font-bold">
+      {isLoading ? (
+        <HeartBeatLoader />
+      ) : (
+        <>
+          <div className="mb-4 flex flex-col items-center justify-between lg:flex-row">
+            <div className="flex items-center gap-x-4">
+              {/* <span className="flex items-center gap-x-1 [&>*:nth-child(even)]:font-bold">
             <p>Order Id:</p>
             <p>{data.item.orderId}</p>
-          </span>
-          <span className="flex items-center gap-x-2 [&>*:nth-child(even)]:font-bold">
-            <Calendar size={20} />
-            <p>{data.item.date}</p>
-          </span>
-          <Button
-            variant="outline"
-            className="flex h-10 w-auto items-center gap-2 rounded-none border-none bg-green-500 text-white"
-            disabled
-          >
-            {data.item.status}
-          </Button>
-        </div>
-        <Select
-          onValueChange={(value: string) => {
-            console.log("Val", value);
-            setValue(value);
-          }}
-        >
-          <SelectTrigger className="w-auto rounded-[16px] border-none bg-gray">
-            <SelectValue placeholder="Order Status" />
-          </SelectTrigger>
-          <SelectContent className="border-none bg-gray">
-            <SelectItem value="delivered">Delivered</SelectItem>
-            <SelectItem value="shipped">Shipped</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="grid gap-4 lg:grid-cols-2">
+          </span> */}
+              <span className="flex items-center gap-x-2 [&>*:nth-child(even)]:font-bold">
+                <Calendar size={20} />
+                <p>
+                  {orders?.createdAt
+                    ? format(orders?.createdAt, "MMMM dd, yyyy")
+                    : "N/A"}
+                </p>
+              </span>
+              <Button
+                variant="outline"
+                className={`flex h-10 w-auto items-center gap-2 rounded-none border-none capitalize ${orders?.status === "pending" ? "bg-yellow-500" : "bg-green-500"} text-white`}
+                disabled
+              >
+                {orders?.status}
+              </Button>
+            </div>
+            <Select
+              onValueChange={(value: string) => {
+                console.log("Val", value);
+                setValue(value);
+              }}
+            >
+              <SelectTrigger className="w-auto rounded-[16px] border-none bg-gray">
+                <SelectValue placeholder="Order Status" />
+              </SelectTrigger>
+              <SelectContent className="border-none bg-gray capitalize">
+                {Object.values(OrderStatus).map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status.replace(/_/g, " ").toLowerCase()}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {/* <div className="grid gap-4 lg:grid-cols-2">
         <CustomCard className="transition3 cursor-pointer border border-gray hover:scale-[1.01]">
           <div className="mb-2 items-start gap-x-4 xl:mb-4 xl:flex">
             <Image
@@ -204,94 +275,94 @@ const SingleOrder = () => {
             className="flex h-10 w-auto items-center gap-2 bg-primary text-white font-bold"
           >
             <DownloadIcon size={20} />
-            {/* {isLoading ? <Spinner size="2" loading={true} /> : <>Log In</>} */}
+          
           </Button>
         </CustomCard>
-      </div>
-      <div className="h-auto w-full overflow-x-auto bg-white shadow-xl">
-        <table className="no-scrollbar w-full overflow-x-scroll leading-normal lg:overflow-hidden">
-          <thead>
-            <tr className="border-gray-400 border-b bg-white">
-              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
-                S/N
-              </th>
+      </div> */}
+          <div className="h-auto w-full overflow-x-auto bg-white shadow-xl">
+            <table className="no-scrollbar w-full overflow-x-scroll leading-normal lg:overflow-hidden">
+              <thead>
+                <tr className="border-gray-400 border-b bg-white">
+                  <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                    S/N
+                  </th>
 
-            
-              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
-                Product
-              </th>
-              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
-                Order Id
-              </th>
-            
-              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
-                Quantity
-              </th>
-              <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
-                Amount
-              </th>
-             
-            </tr>
-          </thead>
+                  <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                    Product
+                  </th>
 
-          { (
-            <tbody className="w-full text-black shadow-lg [&>*:nth-child(even)]:bg-white [&>*:nth-child(odd)]:bg-lightpink">
-              {data.order.map((item, index) => (
-                <tr key={item?.id} className="">
-                  <td className="px-5 py-3 text-sm">{index + 1}</td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item?.product}
-                  </td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {data.item.orderId}
-                  </td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item.quantity}
-                  </td>
-                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
-                    {item.amount}
-                  </td>
-                 
-
+                  <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                    Quantity
+                  </th>
+                  <th className="b px-5 py-3 text-left text-sm font-semibold capitalize tracking-wider text-black">
+                    Amount
+                  </th>
                 </tr>
-              ))}
-               <tr className="">
-                <td></td>
-                <td></td>
-                <td></td>
+              </thead>
+
+              <tbody className="w-full text-black shadow-lg [&>*:nth-child(even)]:bg-white [&>*:nth-child(odd)]:bg-lightpink">
+                <tr className="">
+                  <td className="px-5 py-3 text-sm"></td>
+                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                    {orders?.product?.name}
+                  </td>
+
+                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                    {orders?.quantity}
+                  </td>
+                  <td className="whitespace-no-wrap px-5 py-3 text-sm font-normal capitalize">
+                    {orders?.price}
+                  </td>
+                </tr>
+
+                <tr className="">
+                  <td></td>
+                  <td></td>
+                  <td></td>
                   <td className="px-5 py-3 text-sm font-bold">Subtotal</td>
-                  
-                  <td className="px-5 py-3 text-sm">100</td>
 
+                  <td className="px-5 py-3 text-sm">
+                    {Math.floor(
+                      Number(orders?.price) * Number(orders?.quantity),
+                    )}
+                  </td>
                 </tr>
+                {/* <tr className="">
+              <td></td>
+              <td></td>
+              <td></td>
+              <td className="px-5 py-3 text-sm font-bold">Tax</td>
+
+              <td className="px-5 py-3 text-sm">10</td>
+            </tr> */}
                 <tr className="">
-                <td></td>
-                <td></td>
-                <td></td>
-                  <td className="px-5 py-3 text-sm font-bold">Tax</td>
-                  
-                  <td className="px-5 py-3 text-sm">10</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td className="px-5 py-3 text-base font-bold text-primary">
+                    TOTAL
+                  </td>
 
+                  <td className="px-5 py-3 text-base font-bold text-primary">
+                    {" "}
+                    {Math.floor(
+                      Number(orders?.price) * Number(orders?.quantity),
+                    )}
+                  </td>
                 </tr>
-                <tr className="">
-                <td></td>
-                <td></td>
-                <td></td>
-                  <td className="px-5 py-3 text-base text-primary font-bold">TOTAL</td>
-                  
-                  <td className="px-5 py-3 text-base text-primary font-bold">90</td>
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
-                </tr>
-            </tbody>
-          )}
-        </table>
-      </div>
       <Modal open={value.length > 0} setOpen={() => setValue("")}>
         <ConfirmModal
           type={typeRef.current}
           close={() => setOpen(false)}
-          handleConfirm={() => {}}
-          text={`${value === "delivered" ? "Confirm this order has been delivered!! " : "Confirm this order is on it's way to be shipped"}`}
+          loading={editLoading}
+          handleConfirm={() => mutate({ status: value })}
+          text={` Confirm moving the status of this order to  ${value}!! `}
         />
       </Modal>
     </section>

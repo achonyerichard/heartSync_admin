@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "heartsyncbackend.s3.eu-north-1.amazonaws.com",
       },
     ],
   },

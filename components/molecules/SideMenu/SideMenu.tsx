@@ -61,7 +61,7 @@ const SideMenu = () => {
       inactive: marketplace_inactive,
       active: marketplace_active,
       route: "Store",
-      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN, AdminRole.MARKETER],
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN,],
     },
     {
       inactive: marketplace_inactive,
