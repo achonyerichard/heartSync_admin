@@ -6,26 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import { Trash2, TriangleAlert } from "lucide-react";
+import { Spinner } from "@radix-ui/themes";
 
 const DeleteModal = ({
   text,
   close,
   type,
-  handleDelete
+  handleDelete,
+  loading,
 }: {
-  type: "delete" | "update";
+  type: "delete" | "update" | "add" ;
   close: () => void;
   handleDelete: () => void;
   text?: string;
+  loading: Boolean;
 }) => {
-
-
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
   };
 
   return (
-    <div className="relative max-h-[95vh] w-[35%] overflow-y-auto rounded-xl border-t-4 border-primary bg-white p-6">
+    <div className="relative max-h-[95vh] w-[90%] overflow-y-auto rounded-xl border-t-4 border-primary bg-white p-6 lg:w-[35%]">
       {" "}
       <div className="mb-5 flex items-center gap-x-2.5">
         <Trash2 size={20} color="red" />
@@ -43,24 +44,19 @@ const DeleteModal = ({
           variant="outline"
           className="flex h-10 w-auto items-center gap-2 bg-lightpink active:bg-primary"
           onClick={() => {
-            close()
-           
+            close();
           }}
         >
           Cancel
-         
         </Button>
         <Button
           variant="outline"
           className="flex h-10 w-auto items-center gap-2 bg-primary text-white"
           onClick={() => {
-            handleDelete()
-           
+            handleDelete();
           }}
         >
-            
-          Delete
-         
+          {loading ? <Spinner size="2" loading={true} /> : <>Delete</>}
         </Button>
       </div>
     </div>

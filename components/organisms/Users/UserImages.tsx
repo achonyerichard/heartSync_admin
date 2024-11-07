@@ -2,22 +2,19 @@
 import DeleteModal from "@/components/molecules/Modals/DeleteModal/DeleteModal";
 import Modal from "@/components/molecules/Modals/ModalBackground";
 import { Button } from "@/components/ui/button";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 
-const UserImages = () => {
+const UserImages = ({ images }: any) => {
   const [open, setOpen] = useState(false);
   const typeRef = useRef<"delete" | "update">("delete");
-  const images = [
-    "/images/user-image1.png",
-    "/images/user-image2.png",
-    "/images/user-image-3.png",
-  ];
+
   return (
     <div>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        {images.map((img) => (
-          <div key={img} className="relative">
+        {images?.map((i: React.Key | null | undefined,img: string | StaticImport) => (
+          <div key={i} className="relative">
             <button
               onClick={() => {
                 setOpen(true);
@@ -54,6 +51,7 @@ const UserImages = () => {
       </div>
       <Modal open={open} setOpen={() => setOpen(false)}>
         <DeleteModal
+          loading={false}
           type={typeRef.current}
           close={() => setOpen(false)}
           handleDelete={() => {}}

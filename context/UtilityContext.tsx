@@ -10,7 +10,9 @@ import React, {
 
 interface Utility {
   open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen: Dispatch<SetStateAction <boolean >>;
+  id: string | any;
+  setId: Dispatch<SetStateAction<string | any>>;
 }
 
 interface Children {
@@ -20,6 +22,8 @@ interface Children {
 const UtilContext = React.createContext<Utility>({
   open: false,
   setOpen: () => {},
+  id: "",
+  setId: () => {},
 });
 
 export function useUtilAuth() {
@@ -28,8 +32,9 @@ export function useUtilAuth() {
 
 export const UtilProvider = ({ children }: Children) => {
   const [open, setOpen] = useState(false);
+  const [id, setId] = useState("");
   useEffect(() => {
-    if (open) {
+    if (open&&window.innerWidth<1024) {
       document.body.style.overflow = "hidden";
     }
 
@@ -40,6 +45,8 @@ export const UtilProvider = ({ children }: Children) => {
   const value = {
     open,
     setOpen,
+    id,
+    setId
   };
   return <UtilContext.Provider value={value}>{children}</UtilContext.Provider>;
 };

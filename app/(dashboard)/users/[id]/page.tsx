@@ -12,24 +12,41 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { DeleteIcon, LucideDelete, Trash2 } from "lucide-react";
 import ProfileDetails from "@/components/organisms/Users/ProfileDetails";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import AboutUser from "@/components/organisms/Users/AboutUser";
 import Preferences from "@/components/organisms/Users/Preferences";
 import UserImages from "@/components/organisms/Users/UserImages";
 import Modal from "@/components/molecules/Modals/ModalBackground";
 import DeleteModal from "@/components/molecules/Modals/DeleteModal/DeleteModal";
+import { useFetch } from "@/hooks/useHttpRequest";
+import HeartBeatLoader from "@/components/organisms/Loader/HeartBeatLoader";
 
 const SingleUser = () => {
+  const params = useParams();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const typeRef = useRef<"delete" | "update">("delete");
+  const { data, isLoading, refetch } = useFetch(
+    "user",
+    `users/getAllDetails/${params?.id}`,
+    (data) => {},
+    undefined,
+  );
+  const user = useMemo(() => {
+    if (!data?.data) {
+      return;
+    }
+    return data?.data?.data[0];
+  }, [data?.data]);
+  console.log(user);
+
   return (
     <section className="">
-      <div className="mb-4 flex flex-col gap-y-3 lg:gap-y-0 lg:items-center justify-between lg:flex-row">
-        <div className="flex items-center justify-between lg:justify-start gap-x-2">
+      <div className="mb-4 flex flex-col justify-between gap-y-3 lg:flex-row lg:items-center lg:gap-y-0">
+        <div className="flex items-center justify-between gap-x-2 lg:justify-start">
           <svg
             onClick={() => router.back()}
             className="cursor-pointer"
@@ -44,7 +61,7 @@ const SingleUser = () => {
               fill="black"
             />
           </svg>
-          <div className="flex items-center  gap-x-2.5">
+          <div className="flex items-center gap-x-2.5">
             <svg
               width="32"
               height="33"
@@ -74,7 +91,7 @@ const SingleUser = () => {
           </div>
         </div>
 
-        <div className="flex items-center lg:justify-end justify-center gap-x-4">
+        <div className="flex items-center justify-center gap-x-4 lg:justify-end">
           <div className="flex items-center gap-x-2">
             <Label htmlFor="airplane-mode text-xs">Unblocked</Label>
             <Switch id="airplane-mode" />
@@ -85,19 +102,22 @@ const SingleUser = () => {
           </div>
         </div>
       </div>
-      <div className="w-full">
-        <Tabs defaultValue="about" className="">
-          <div className="flex flex-col items-center lg:justify-between lg:flex-row gap-y-4 lg:gap-y-0">
-            <div>
-              <TabsList>
-                <TabsTrigger value="about" className="rounded-[10px]">
-                  About
-                </TabsTrigger>
-                <TabsTrigger value="preferences">Preferences</TabsTrigger>
-                <TabsTrigger value="gallery">Gallery</TabsTrigger>
-              </TabsList>
-            </div>
-         
+      {isLoading ? (
+        <HeartBeatLoader />
+      ) : (
+        <div className="w-full">
+          <Tabs defaultValue="about" className="">
+            <div className="flex flex-col items-center gap-y-4 lg:flex-row lg:justify-between lg:gap-y-0">
+              <div>
+                <TabsList>
+                  <TabsTrigger value="about" className="rounded-[10px]">
+                    About
+                  </TabsTrigger>
+                  <TabsTrigger value="preferences">Preferences</TabsTrigger>
+                  <TabsTrigger value="gallery">Gallery</TabsTrigger>
+                </TabsList>
+              </div>
+
               <Button
                 variant="outline"
                 className="flex h-10 w-auto items-center gap-2 bg-lightpink active:bg-primary"
@@ -110,28 +130,32 @@ const SingleUser = () => {
                 <Trash2 size={12} />
                 {/* {isLoading ? <Spinner size="2" loading={true} /> : <>Log In</>} */}
               </Button>
-          
-          </div>
-          <div className="mt-5 flex lg:flex-row flex-col-reverse w-full items-start gap-5">
-            <div className="w-full  p-2 lg:w-1/4">
-              <ProfileDetails />
             </div>
-            <div className="w-full lg:w-3/4">
-              <TabsContent value="about" className="w-full">
-                <AboutUser />
-              </TabsContent>
-              <TabsContent value="preferences" className="w-full">
-                <Preferences />
-              </TabsContent>
-              <TabsContent value="gallery" className="w-full">
-                <UserImages />
-              </TabsContent>
+            <div className="mt-5 flex w-full flex-col-reverse items-start gap-5 lg:flex-row">
+              <div className="w-full p-2 lg:w-1/4">
+                <ProfileDetails about={user?.profile} />
+              </div>
+              <div className="w-full lg:w-3/4">
+                <TabsContent value="about" className="w-full">
+                  <AboutUser about={user?.profile} />
+                </TabsContent>
+                <TabsContent value="preferences" className="w-full">
+                  <Preferences
+                    interests={user?.profile?.interests}
+                    languages={user?.profile?.languages}
+                  />
+                </TabsContent>
+                <TabsContent value="gallery" className="w-full">
+                  <UserImages images={user?.profile?.imagesArray} />
+                </TabsContent>
+              </div>
             </div>
-          </div>
-        </Tabs>
-      </div>
+          </Tabs>
+        </div>
+      )}
       <Modal open={open} setOpen={() => setOpen(false)}>
         <DeleteModal
+          loading={false}
           type={typeRef.current}
           close={() => setOpen(false)}
           handleDelete={() => {}}

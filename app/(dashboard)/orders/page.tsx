@@ -9,17 +9,71 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePaginatedFetch } from "@/hooks/useHttpRequest";
 import { Calendar } from "lucide-react";
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
+import { useAuth } from "@/context/AuthContext";
+import { AdminRole } from "@/lib/Constants";
 
 const Page = () => {
   const [dateRange, setDateRange] = useState<any>([null, null]);
   const [startDate, endDate] = dateRange;
+  const { userRole } = useAuth();
+  let itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const {
+    isLoading,
+    data: orderItems,
+    isError,
+    error,
+    refetch: refetchOrders,
+  } = usePaginatedFetch(
+    "orderItems",
+
+    `orderItems/getOrderItems?${startDate && endDate ? `startDate=${format(startDate, "yyyy-MM-dd")}&endDate=${format(endDate, "yyyy-MM-dd")}` : ""}`,
+    currentPage + 1, // Backend expects 1-based page index
+    itemsPerPage,
+    {
+      dataKey: "orderItems", // If the data array is under `users`
+      totalPagesKey: "totalPages", // If the total pages key is `totalUsersPages`
+      totalItemsKey: "totalOrderItems", // If the total items key is `totalUsers`
+      currentPageKey: "currentPage", // If current page is under `current`
+    },
+    (data: any) => console.log("Fetch success", data),
+    (error) => console.error("Fetch error", error),
+  );
+  const { data, refetch } = usePaginatedFetch(
+    "orders",
+    `orders/getCustomOrders?${startDate && endDate ? `startDate=${format(startDate, "yyyy-MM-dd")}&endDate=${format(endDate, "yyyy-MM-dd")}` : ""}`,
+    currentPage + 1, // Backend expects 1-based page index
+    itemsPerPage,
+    {
+      dataKey: "orders", // If the data array is under `users`
+      totalPagesKey: "totalPages", // If the total pages key is `totalUsersPages`
+      totalItemsKey: "totalOrders", // If the total items key is `totalUsers`
+      currentPageKey: "currentPage", // If current page is under `current`
+    },
+    (data: any) => console.log("Fetch success", data),
+    (error) => console.error("Fetch error", error),
+  );
+  const pageCount = Math.ceil(data?.totalItems / itemsPerPage);
+  const handleDateChange = (update: any) => {
+    setDateRange(update);
+    if (update[0] && update[1]) {
+      const formattedRange = `startDate=${format(update[0], "yyyy-MM-dd")}&endDate=${format(update[1], "yyyy-MM-dd")}`;
+      console.log("Formatted Date Range:", formattedRange);
+      refetch(); // Refetch with new date range
+    }
+  };
+
   return (
     <div className="">
-      <div className="mb-4 flex flex-col items-center justify-between lg:flex-row">
+      <div className="mb-4 flex flex-col items-center justify-between gap-y-2 lg:flex-row">
         <div className="flex items-center gap-x-2.5">
           <svg
             width="32"
@@ -44,9 +98,7 @@ const Page = () => {
             selectsRange={true}
             startDate={startDate}
             endDate={endDate}
-            onChange={(update) => {
-              setDateRange(update);
-            }}
+            onChange={handleDateChange}
             icon={<Calendar />}
             placeholderText="Select a Date Range"
             isClearable={true}
@@ -64,11 +116,28 @@ const Page = () => {
       </div>
       <div className="flex justify-start">
         <Input
-          className="transition3 focus:border-gray-500 mx-auto hidden h-10 rounded-lg bg-gray lg:block lg:w-80"
+          className="transition3 mx-auto hidden h-10 rounded-lg border-gray bg-gray lg:block lg:w-80"
           placeholder="Search anything..."
         />
       </div>
-      <OrdersTable />
+      {isLoading ? (
+        <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      ) : (
+        <OrdersTable
+          data={AdminRole.MARKETER === userRole ? orderItems : data}
+          isMarketer={AdminRole.MARKETER === userRole}
+          refetch={refetchOrders}
+          pageCount={pageCount}
+          setCurrentPage={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+        />
+      )}
     </div>
   );
 };

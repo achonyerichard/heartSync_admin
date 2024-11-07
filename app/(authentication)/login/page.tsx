@@ -4,15 +4,18 @@ import { emailRegex } from "@/lib/regex";
 import { Input } from "@/components/ui/input";
 import logo from "@/public/images/logo_1.png";
 import { useMutate } from "@/hooks/useHttpRequest";
+import { toast } from "react-toastify";
 import React, { ChangeEvent, SyntheticEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
 import { setHttpHeaders } from "@/lib/setHeaders";
+import { useAuth } from "@/context/AuthContext";
 
 const Page = () => {
   const router = useRouter();
+  const { setUserRole } = useAuth();
   const [login, setLogin] = useState({ email: "", password: "" });
   const [passwordtoggle, setPasswordToggle] = useState(true);
   const [error, setError] = useState({
@@ -35,17 +38,18 @@ const Page = () => {
     "post",
     "auth/adminLogin",
     (data) => {
-      setCookie("isLoggedIn", true, { maxAge: 31536000 });
-      setCookie("token", data?.data.data.accessToken, { maxAge: 31536000 });
-      localStorage.setItem("user", data?.data.data);
+      toast.success(data?.data.message);
+      setCookie("isLoggedIn", true, { maxAge: 86400});
+      setCookie("heartsyncRole", data?.data?.data?.role, { maxAge: 86400 });
+      setCookie("token", data?.data.data.accessToken, { maxAge: 86400 });
+      localStorage.setItem("heartsync_user", JSON.stringify(data?.data.data));
+      setUserRole(data?.data?.data?.role);
       setHttpHeaders(data?.data.data.accessToken);
       router.push("/overview");
-      console.log(data);
     },
     undefined,
-    (err) => {
-      handleErrorChange("email", true, "");
-      handleErrorChange("password", true, "");
+    (err: any) => {
+      toast.error(err.response.data.message);
     },
   );
 
@@ -53,11 +57,11 @@ const Page = () => {
     e.preventDefault();
     if (!emailRegex.test(login.email.trim())) {
       handleErrorChange("email", true, "Please enter a valid email");
-    } else if (login.password.trim().length < 7) {
+    } else if (login.password.trim().length < 6) {
       handleErrorChange(
         "password",
         true,
-        "Password must be atleast seven characters",
+        "Password must be atleast six characters",
       );
     } else {
       mutate(login);
@@ -66,18 +70,20 @@ const Page = () => {
 
   return (
     <div className="h-fit w-full">
-      <header className="mb-7 flex flex-col lg:items-start items-center ">
-      <Image
-        src={logo}
-        alt="auth_logo"
-        className="mb-10 h-auto w-full lg:max-w-[189px] rounded-3xl object-cover "
-      />
-      <h3 className=" text-3xl lg:text-[56px] lg:text-left text-center font-bold text-primary">Welcome Back</h3>
+      <header className="mb-7 flex flex-col items-center lg:items-start">
+        <Image
+          src={logo}
+          alt="auth_logo"
+          className="mb-10 h-auto w-full rounded-3xl object-cover lg:max-w-[189px]"
+        />
+        <h3 className="text-center text-3xl font-bold text-primary lg:text-left lg:text-[56px]">
+          Welcome Back
+        </h3>
       </header>
-     
+
       <form onSubmit={submitHandler} className="w-full lg:w-10/12">
         <Input
-          className={`transition3 focus:border-gray-500 mb-7 h-14 bg-gray ${error.email.error ? "border-primary text-primary" : ""}`}
+          className={`transition3 mb-7 h-14 border-gray bg-gray ${error.email.error ? "border-primary text-primary" : ""}`}
           placeholder="Email address"
           name="email"
           onChange={handleInputChange}
@@ -86,7 +92,7 @@ const Page = () => {
         />{" "}
         <div className="relative mb-14 w-full">
           <Input
-            className={`transition3 focus:border-gray-500 h-14 bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
+            className={`transition3 h-14 border-gray bg-gray ${error.password.error ? "border-primary text-primary" : ""}`}
             placeholder="Password"
             name="password"
             type={passwordtoggle ? "password" : "text"}
@@ -127,6 +133,7 @@ const Page = () => {
           variant="default"
           className="h-14 w-full active:bg-primary"
           type="submit"
+          disabled={isLoading}
         >
           {isLoading ? <Spinner size="2" loading={true} /> : <>Log In</>}
         </Button>

@@ -3,7 +3,6 @@ import { ReactElement } from "react";
 export interface Socials {
   name: string;
   url: ReactElement;
-
 }
 export interface User {
   id?: number;
@@ -25,9 +24,11 @@ export interface ProfileDetail {
   lastSeen: string;
 }
 export interface Users {
-  id:string;
-  name:string;
-  createdAt:string;
-  email:string;
-  role:string
+  id: string;
+  name: string;
+  createdAt: string;
+  email: string;
+  role: string;
+  password?: string;
 }
+

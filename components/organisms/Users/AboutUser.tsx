@@ -1,60 +1,48 @@
 import { Card } from "@/components/ui/card";
+import { format } from "date-fns";
 import React from "react";
 
-const AboutUser = () => {
+const AboutUser = ({ about }: any) => {
+  console.log(about);
   return (
     <div>
-      <Card className="flex flex-col space-y-2 border-none p-3 rounded-none shadow-xl">
-        <div className="flex items-center justify-between [&>*:nth-child(even)]:font-bold text-base">
+      <Card className="flex flex-col space-y-2 rounded-none border-none p-3 shadow-xl">
+        <div className="flex items-center justify-between text-base [&>*:nth-child(even)]:font-bold">
           {" "}
           <p>Date of Birth</p>
-          <p>06/09/1901</p>
+          <p>
+            {about?.birthday ? format(about?.birthday, "MMMM dd, yyyy") : "N/A"}
+          </p>
         </div>
-        <div className="flex items-center justify-between [&>*:nth-child(even)]:font-bold text-base">
+        <div className="flex items-center justify-between text-base [&>*:nth-child(even)]:font-bold">
           {" "}
           <p>Gender</p>
-          <p>Male</p>
+          <p>{about?.gender ?? "N/A"}</p>
         </div>
-        <div className="flex items-center justify-between [&>*:nth-child(even)]:font-bold text-base">
-          {" "}
-          <p>Email</p>
-          <p>admin@mail.com</p>
-        </div>
-        <div className="flex items-center justify-between [&>*:nth-child(even)]:font-bold text-base">
-          {" "}
-          <p>Phone </p>
-          <p>+234 8159807048</p>
-        </div>
-        <div className="flex items-center justify-between [&>*:nth-child(even)]:font-bold text-base">
+
+        <div className="flex items-center justify-between text-base [&>*:nth-child(even)]:font-bold">
           {" "}
           <p>Height</p>
-          <p>180cm</p>
+          <p>{about?.height ?? "N/A"}</p>
         </div>
-        <div className="flex items-center justify-between [&>*:nth-child(even)]:font-bold text-base">
+        <div className="flex items-center justify-between text-base [&>*:nth-child(even)]:font-bold">
           {" "}
           <p>Weight</p>
-          <p>70kg</p>
+          <p>{about?.weight ?? "N/A"}</p>
         </div>
-
       </Card>
-      <Card className="flex flex-col space-y-2 border-none p-3 rounded-none shadow-xl mt-5">
-        <div className="flex items-center justify-between [&>*:nth-child(even)]:font-bold text-base">
+      <Card className="mt-5 flex flex-col space-y-2 rounded-none border-none p-3 shadow-xl">
+        <div className="flex items-center justify-between text-base [&>*:nth-child(even)]:font-bold">
           {" "}
           <p>Education</p>
-          <p>Univeristy of Nigeria</p>
+          <p>{about?.school ?? "N/A"}</p>
         </div>
-        <div className="flex items-center justify-between [&>*:nth-child(even)]:font-bold text-base">
+        <div className="flex items-center justify-between text-base [&>*:nth-child(even)]:font-bold">
           {" "}
           <p>Job Title</p>
-          <p>Developer</p>
-        </div>
-        <div className="flex items-center justify-between [&>*:nth-child(even)]:font-bold text-base">
-          {" "}
-          <p>Address</p>
-          <p>1 Street</p>
+          <p>{about?.jobTitle ?? "N/A"}</p>
         </div>
        
-
       </Card>
     </div>
   );

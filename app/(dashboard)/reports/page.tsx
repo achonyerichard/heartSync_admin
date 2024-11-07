@@ -8,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFetch, usePaginatedFetch } from "@/hooks/useHttpRequest";
 import { Calendar } from "lucide-react";
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
@@ -16,6 +18,27 @@ import "react-datepicker/dist/react-datepicker.css";
 const Page = () => {
   const [dateRange, setDateRange] = useState<any>([null, null]);
   const [startDate, endDate] = dateRange;
+
+  let itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const { isLoading, data, isError, error, refetch } = usePaginatedFetch(
+    "get",
+    "reports/getReports",
+    currentPage + 1,
+    itemsPerPage,
+    {
+      dataKey: "reports",
+      totalPagesKey: "totalPages",
+      totalItemsKey: "totalReports",
+      currentPageKey: "currentPage",
+    },
+    (data: any) => console.log("Fetch success", data),
+    (error) => console.error("Fetch error", error),
+  );
+
+  const pageCount = Math.ceil(data?.totalItems / itemsPerPage);
+
   return (
     <div className="">
       <div className="mb-4 flex flex-col items-center justify-between lg:flex-row">
@@ -35,7 +58,7 @@ const Page = () => {
 
           <span className="text-[20px] font-bold">All Reports</span>
         </div>
-        <div className="flex items-center gap-x-2.5">
+        <div className="flex flex-col items-center gap-x-2.5 gap-y-3 lg:flex-row">
           <DatePicker
             showIcon
             className="text-gray-700 cursor-pointer rounded-[16px] bg-white px-4 py-2 shadow-lg placeholder:pl-2 placeholder:text-sm placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -60,8 +83,23 @@ const Page = () => {
           </Select>
         </div>
       </div>
-
-      <ReportCards />
+      {isLoading ? (
+        <div className="mt-5 gap-4 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      ) : (
+        <ReportCards
+          data={data}
+          refetch={refetch}
+          pageCount={pageCount}
+          setCurrentPage={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+        />
+      )}
     </div>
   );
 };

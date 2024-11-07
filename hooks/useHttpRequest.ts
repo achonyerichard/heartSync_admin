@@ -2,6 +2,28 @@ import http, { httpForm } from "./axios";
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery, useMutation, useQueries } from "@tanstack/react-query";
 
+interface PaginatedResponse<T> {
+  data: T[];
+  totalPages: number;
+  totalItems: number;
+  currentPage: number;
+}
+
+interface PaginationOptions {
+  dataKey?: string; 
+  totalPagesKey?: string; 
+  totalItemsKey?: string; 
+  currentPageKey?: string; 
+}
+
+interface PaginationHookReturn<T> {
+  isLoading: boolean;
+  data: PaginatedResponse<T> | undefined | any;
+  error: unknown;
+  isError: boolean;
+  refetch: () => void;
+}
+
 interface hookReturn {
   isLoading: boolean;
   data: AxiosResponse | undefined;
@@ -50,6 +72,53 @@ export const useFetch = (
   };
 };
 
+
+export const usePaginatedFetch = <T>(
+  key: string,
+  url: string,
+  page: number,
+  limit: number,
+  options?: PaginationOptions,
+  success?: (data: AxiosResponse) => void,
+  errorfn?: (err: any) => void,
+): PaginationHookReturn<T> => {
+  const {
+    dataKey = "data", 
+    totalPagesKey = "totalPages",
+    totalItemsKey = "totalItems",
+    currentPageKey = "currentPage",
+  } = options || {};
+
+  const { isLoading, data, error, isError, refetch } = useQuery(
+    [key, page, limit],
+    async () => {
+      const response = await http.get(url, {
+        params: { page, limit },
+      });
+
+   
+      return {
+        data: response.data.data[dataKey],
+        totalPages: response.data.data[totalPagesKey], 
+        totalItems: response.data.data[totalItemsKey], 
+        currentPage: response.data.data[currentPageKey], 
+      };
+    },
+    {
+      onSuccess: success,
+      onError: errorfn,
+      keepPreviousData: true,
+    },
+  );
+
+  return {
+    isLoading,
+    data,
+    error,
+    isError,
+    refetch,
+  };
+};
 //for handling PUT, POST, PATCH, DELETE requests
 export const useMutate = (
   method: string,

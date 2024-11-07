@@ -2,35 +2,47 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import React from "react";
 
-const Preferences = () => {
-  const languages = ["English", "French", "Igbo"];
-  const interests = ["Travel", "Movies", "Art", "Tech"];
+const Preferences = ({
+  interests,
+  languages,
+}: {
+  interests: string[];
+  languages: string[];
+}) => {
   return (
     <div>
       <Card className="mt-5 flex flex-col space-y-4 rounded-none border-none p-3 shadow-xl">
         <div>
           <h4 className="pb-2 text-base font-bold">Languages</h4>
-          {languages.map((item, i) => (
-            <Badge
-              key={i}
-              variant={"outline"}
-              className="border border-gray shadow-sm rounded-[16px]"
-            >
-              {item}
-            </Badge>
-          ))}
+          {languages?.length > 0 ? (
+            languages?.map((item, i) => (
+              <Badge
+                key={i}
+                variant={"outline"}
+                className="rounded-[16px] border border-gray shadow-sm"
+              >
+                {item}
+              </Badge>
+            ))
+          ) : (
+            <div className="flex items-center justify-center">N/A</div>
+          )}
         </div>
         <div>
           <h4 className="pb-2 text-base font-bold">Interests</h4>
-          {interests.map((item, i) => (
-            <Badge
-              key={i}
-              variant={"outline"}
-              className="border border-gray shadow-sm rounded-[16px]"
-            >
-              {item}
-            </Badge>
-          ))}
+          {interests?.length > 0 ? (
+            interests?.map((item, i) => (
+              <Badge
+                key={i}
+                variant={"outline"}
+                className="rounded-[16px] border border-gray shadow-sm"
+              >
+                {item}
+              </Badge>
+            ))
+          ) : (
+            <div className="flex items-center justify-center">N/A</div>
+          )}
         </div>
       </Card>
     </div>

@@ -1,36 +1,23 @@
-"use client";
-import { Button } from "@/components/ui/button";
+import React from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import Image from "next/image";
+import { List } from "lucide-react";
 
-import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Spinner } from "@radix-ui/themes";
-import { Input } from "@/components/ui/input";
-import { Category } from "@/interfaces/category";
-
-const AddModal = ({
+const ProductModal = ({
   type,
-  setOpen,
+  skip,
+  item,
 }: {
-  type: "add" | "update";
-  setOpen: () => void;
+  type: "approve" | "disapprove" | "view";
+  item: any;
+  skip: boolean;
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Category>();
-
-  const queryClient = useQueryClient();
-  const closeModal = () => {
-    setOpen();
-  };
-
-  const onSubmit: SubmitHandler<Category> = (data: any) => {
-    console.log(data);
-  };
-
   return (
     <div className="h--auto relative max-h-[95vh] overflow-y-auto rounded-xl bg-white p-6 lg:w-2/5">
       {" "}
@@ -47,46 +34,74 @@ const AddModal = ({
             fill="#F75555"
           />
         </svg>
-
-        <span className="text-[20px] font-bold capitalize">{type} Category</span>
-      </div>
-      <form className="" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex gap-x-10">
-          <div className="w-full">
-            <div className="mb-3">
-              <label className="text-xs font-bold text-black"> Name</label>
-              <Input
-                className={`transition3 focus:border-gray-500 mb-14 h-14 bg-gray`}
-                placeholder="Enter a Category"
-                {...register("name", {
-                  required: "Name is required",
-                })}
-              />
-              {errors?.name && (
-                <span className="duration-1500 text-xs text-red-500 transition-all ease-out">
-                  {errors?.name.message}
-                </span>
-              )}
-            </div>
-          </div>
+        <div className="flex w-full items-center justify-between">
+          <span className="text-[20px] font-bold capitalize">{item?.name}</span>
+          <span className="flex items-center gap-2">
+            <p className="font-semibold text-black">Status:</p>
+            <p
+              className={`${item?.isApproved ? "text-green-500" : "text-red-500"}`}
+            >
+              {item?.isApproved ? "Approved" : "Not Approved"}{" "}
+            </p>
+          </span>
         </div>
-        <div className="flex items-center justify-between gap-x-3">
-          {" "}
-          <Button type="submit" color="red" className="min-w-[100px]">
-            {false ? <Spinner size="2" loading={true} /> : <>Add Category</>}
-          </Button>{" "}
-          <Button
-            variant="outline"
-            onClick={closeModal}
-            color="gray"
-            className="min-w-[100px]"
-          >
-            {type === "add" ? "Cancel" : "Delete"}
-          </Button>
-        </div>{" "}
-      </form>
+      </div>
+      <div className="flex flex-col gap-y-3">
+        <div className="item-center flex w-full flex-col justify-center text-center">
+          <span className="capitalize">
+            <b>Price</b>: {item?.price}
+          </span>
+          <span className="capitalize">
+            <b>Store</b>: {item?.store?.name}
+          </span>
+          <span className="capitalize">
+            <b>Location</b>: {item?.store?.country}
+          </span>
+        </div>
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+        >
+          <CarouselContent>
+            {" "}
+            {item?.imagesUrl?.map(
+              (prev: string, index: number, array: string[]) => (
+                <CarouselItem className="" key={index}>
+                  {" "}
+                  <Image
+                    src={prev}
+                    alt="gift image"
+                    className="h-[200px] max-h-[200px] w-full object-cover"
+                    width={500}
+                    height={500}
+                  />
+                </CarouselItem>
+              ),
+            )}
+          </CarouselContent>{" "}
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+        <span className="capitalize">
+          <b>Description</b>: {item?.description}
+        </span>
+        {skip && (
+          <ul>
+            {item?.category?.map((category: any) => (
+              <li key={category} className="flex items-center gap-2">
+                <span>
+                  <List color="green" size={16} />
+                </span>
+                {category}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };
 
-export default AddModal;
+export default ProductModal;

@@ -23,47 +23,71 @@ import logout from "@/public/images/icons/logout.svg";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUtilAuth } from "@/context/UtilityContext";
-
+import { deleteCookie } from "cookies-next";
+import { useAuth } from "@/context/AuthContext";
+import { AdminRole } from "@/lib/Constants";
 const SideMenu = () => {
+  const { userRole } = useAuth();
   const router = useRouter();
   const path = usePathname();
   const { open, setOpen } = useUtilAuth();
-  const [width, setWidth] = useState(0);
 
   const menu = [
     {
       inactive: overview_inactive,
       active: overview_active,
       route: "Overview",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
     },
-    { inactive: users_inactive, active: users_active, route: "Users" },
+    {
+      inactive: users_inactive,
+      active: users_active,
+      route: "Users",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
+    },
     {
       inactive: payments_inactive,
       active: payments_active,
       route: "Membership",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
     },
     {
       inactive: orders_inactive,
       active: category_active,
       route: "Category",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
+    },
+    {
+      inactive: marketplace_inactive,
+      active: marketplace_active,
+      route: "Store",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN,],
     },
     {
       inactive: marketplace_inactive,
       active: marketplace_active,
       route: "Marketplace",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN, AdminRole.MARKETER],
     },
-    { inactive: roles_inactive, active: roles_active, route: "Roles" },
-    { inactive: orders_inactive, active: orders_active, route: "Orders" },
-    { inactive: reports_inactive, active: reports_active, route: "Reports" },
+    {
+      inactive: roles_inactive,
+      active: roles_active,
+      route: "Roles",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
+    },
+    {
+      inactive: orders_inactive,
+      active: orders_active,
+      route: "Orders",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN, AdminRole.MARKETER],
+    },
+    {
+      inactive: reports_inactive,
+      active: reports_active,
+      route: "Reports",
+      roles: [AdminRole.ADMIN, AdminRole.SUPER_ADMIN],
+    },
   ];
-
-  useEffect(() => {
-    if (window) setWidth(window.innerWidth);
-  }, []);
-
-  const index = menu.findIndex(
-    (rte) => rte.route.toLowerCase() === path.split("/")[1].split("?")[0],
-  );
 
   return (
     <>
@@ -71,10 +95,10 @@ const SideMenu = () => {
         className={`${open ? "fixed bottom-0 left-0 right-0 top-0 z-20 bg-black/20 backdrop-blur-sm xl:hidden" : "hidden"}`}
       />
       <aside
-        className={`transition2 fixed bottom-0 top-0 z-20 flex shrink-0 flex-col bg-secondary xl:sticky xl:h-screen ${open ? "w-3/5 max-xl:left-0 md:w-2/5 xl:w-1/5" : "max-xl:-left-64 xl:w-[108px]"}`}
+        className={`transition2 fixed bottom-0 top-0 z-20 flex h-screen shrink-0 flex-col bg-secondary xl:sticky ${open ? "w-3/5 max-xl:left-0 md:w-2/5 xl:w-1/5" : "max-xl:-left-64 xl:w-[108px]"}`}
       >
         <div
-          className={`transition2 relative flex h-16 items-center justify-between bg-primary py-2 xl:h-[88px] ${open ? "px-3  xl:px-9" : "py-4 px-3 xl:px-6"}`}
+          className={`transition2 relative flex h-16 shrink-0 items-center justify-between bg-primary py-2 lg:h-[88px] ${open ? "px-3 xl:px-9" : "px-3 py-4 xl:px-6"}`}
         >
           <span
             className={`transition2 relative ${open ? "w-[100px] xl:w-[164px]" : "w-[0px] overflow-hidden"}`}
@@ -126,7 +150,7 @@ const SideMenu = () => {
           </button>
         </div>
         <div
-          className={`transition2 relative flex grow flex-col justify-between py-4 xl:py-7 ${open ? "px-3 xl:px-9" : "px-3 xl:px-6"}`}
+          className={`scroll transition2 relative flex grow flex-col justify-between overflow-y-auto py-4 xl:py-7 ${open ? "px-3 xl:px-9" : "px-3 xl:px-6"}`}
         >
           <div>
             <h6
@@ -135,38 +159,32 @@ const SideMenu = () => {
               MANAGE
             </h6>
             <div className="relative overflow-hidden">
-              <div
-                className={`transition3 absolute left-0 right-0 z-10 h-[40px] rounded-md bg-white shadow-lg xl:h-[53px] xl:rounded-[10px] ${path.includes("/settings") ? "hidden" : ""}`}
-                style={{
-                  transform:
-                    width > 1024
-                      ? `translateY(${index * (53 + 4)}px)`
-                      : `translateY(${index * (40 + 4)}px)`,
-                }}
-              />
-              {menu.map((menuitem, index) => (
-                <Link
-                  className={`transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 xl:rounded-[10px] xl:px-4 xl:py-3 ${path.includes(menuitem.route.toLowerCase()) ? "" : "hover:bg-primary"}`}
-                  key={index}
-                  href={`/${menuitem.route.toLowerCase()}`}
-                  onClick={() => setOpen(false)}
-                >
-                  <Image
-                    src={
-                      path.includes(menuitem.route.toLowerCase())
-                        ? menuitem.active
-                        : menuitem.inactive
-                    }
-                    alt={`${menuitem.route} icon`}
-                    className="h-6 w-6 xl:h-auto xl:w-auto"
-                  />
-                  <span
-                    className={`transition2 text-nowrap text-sm xl:text-base ${path.includes(menuitem.route.toLowerCase()) ? "text-primary group-hover:text-white" : "text-white"} ${open ? "visible w-[100%]" : "invisible w-[0%] overflow-hidden"}`}
-                  >
-                    {menuitem.route}
-                  </span>
-                </Link>
-              ))}
+              {menu.map(
+                (menuitem, index) =>
+                  menuitem.roles?.includes(userRole) && (
+                    <Link
+                      className={`transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-md bg-transparent px-2 py-2 xl:rounded-[10px] xl:px-4 xl:py-3 ${path.includes(menuitem.route.toLowerCase()) ? "bg-white" : "hover:bg-primary"}`}
+                      key={index}
+                      href={`/${menuitem.route.toLowerCase()}`}
+                      onClick={() => setOpen(false)}
+                    >
+                      <Image
+                        src={
+                          path.includes(menuitem.route.toLowerCase())
+                            ? menuitem.active
+                            : menuitem.inactive
+                        }
+                        alt={`${menuitem.route} icon`}
+                        className="h-6 w-6 xl:h-auto xl:w-auto"
+                      />
+                      <span
+                        className={`transition2 text-nowrap text-sm xl:text-base ${path.includes(menuitem.route.toLowerCase()) ? "text-primary group-hover:text-primary" : "text-white"} ${open ? "visible w-[100%]" : "invisible w-[0%] overflow-hidden"}`}
+                      >
+                        {menuitem.route}
+                      </span>
+                    </Link>
+                  ),
+              )}
             </div>
           </div>
           <div>
@@ -201,7 +219,9 @@ const SideMenu = () => {
               <div
                 className="transition3 group relative z-20 mb-1 flex cursor-pointer items-center gap-x-2 rounded-[10px] bg-transparent px-2 py-2 hover:bg-primary xl:px-4 xl:py-3"
                 onClick={() => {
-                  router.push("/settings");
+                  deleteCookie("isLoggedIn");
+                  deleteCookie("token");
+                  router.push("/login");
                 }}
               >
                 <Image src={logout} alt={`settings icon`} className="" />

@@ -7,18 +7,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFetch, usePaginatedFetch } from "@/hooks/useHttpRequest";
 import { Calendar } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const Page = () => {
+  let itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(0);
+
+
   const [dateRange, setDateRange] = useState<any>([null, null]);
   const [startDate, endDate] = dateRange;
+  
+ const { isLoading,data, isError, error, refetch } = usePaginatedFetch(
+   "get",
+   "users/getUsers",
+   currentPage + 1, // Backend expects 1-based page index
+   itemsPerPage,
+   {
+     dataKey: "users", // If the data array is under `users`
+     totalPagesKey: "totalPages", // If the total pages key is `totalUsersPages`
+     totalItemsKey: "totalUsers", // If the total items key is `totalUsers`
+     currentPageKey: "currentPage", // If current page is under `current`
+   },
+   (data: any) => console.log("Fetch success", data),
+   (error) => console.error("Fetch error", error),
+ );
+
+  const pageCount = Math.ceil(data?.totalItems / itemsPerPage);
+
   return (
     <div className="">
-     
-      <div className="mb-4 flex flex-col lg:flex-row items-center justify-between">
+      <div className="mb-4 flex flex-col items-center justify-between gap-y-2 lg:flex-row">
         <div className="flex items-center gap-x-2.5">
           <svg
             width="32"
@@ -38,7 +61,7 @@ const Page = () => {
         <div className="flex items-center gap-x-2.5">
           <DatePicker
             showIcon
-            className="rounded-[16px]  bg-white shadow-lg cursor-pointer px-4 py-2 text-gray-700 focus:outline-none placeholder:text-black placeholder:pl-2 placeholder:text-sm focus:ring-2 focus:ring-indigo-500"
+            className="text-gray-700 cursor-pointer rounded-[16px] bg-white px-4 py-2 shadow-lg placeholder:pl-2 placeholder:text-sm placeholder:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
             selectsRange={true}
             startDate={startDate}
             endDate={endDate}
@@ -50,18 +73,33 @@ const Page = () => {
             isClearable={true}
           />
           <Select>
-            <SelectTrigger className="bg-gray w-[116px] rounded-[16px] border-none">
+            <SelectTrigger className="w-[116px] rounded-[16px] border-none bg-gray">
               <SelectValue placeholder="Filter" />
             </SelectTrigger>
-            <SelectContent className="bg-gray border-none">
+            <SelectContent className="border-none bg-gray">
               <SelectItem value="light">Subscribed</SelectItem>
               <SelectItem value="dark">Not Subscribed</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
-     
-      <UsersTables/>
+      {isLoading ? (
+        <div className="mt-5 flex flex-col [&>*:nth-child(even)]:bg-gray [&>*:nth-child(odd)]:bg-lightpink">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      ) : (
+        <UsersTables
+          data={data}
+          refetch={refetch}
+          pageCount={pageCount}
+          setCurrentPage={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+        />
+      )}
     </div>
   );
 };
